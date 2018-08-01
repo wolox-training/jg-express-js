@@ -1,4 +1,4 @@
-# Training  [![Build Status](https://api.travis-ci.org/Wolox/express-js-bootstrap.png)](https://travis-ci.org/Wolox/express-js-bootstrap) 
+# Training  [![Build Status](https://travis-ci.org/wolox-training/jg-express-js.svg?branch=master)](https://travis-ci.org/wolox-training/jg-express-js)
 				
 Training-expressJS (Kick-Off)
 
