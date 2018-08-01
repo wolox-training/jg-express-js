@@ -1,6 +1,6 @@
-# training
-
-training-expressJS
+# Training  [![Build Status](https://travis-ci.org/wolox-training/jg-express-js.svg?branch=master)](https://travis-ci.org/wolox-training/jg-express-js)
+				
+Training-expressJS (Kick-Off)
 
 ## First steps
 
