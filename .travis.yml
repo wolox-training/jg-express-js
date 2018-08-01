@@ -18,5 +18,5 @@ services:
   - postgresql
 
 before_script:
-  - psql -c "CREATE DATABASE bookstest;" -U postgres
+  - psql -c "CREATE DATABASE db-training;" -U jgutierrez
   - node_modules/.bin/sequelize db:migrate
