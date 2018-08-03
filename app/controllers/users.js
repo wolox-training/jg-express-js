@@ -1,6 +1,6 @@
 const users = require('../models/user').users;
 const validations = require('./validations');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 module.exports = {
   create(req, res) {
