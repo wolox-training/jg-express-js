@@ -1,6 +1,5 @@
-const users = require('./controllers/users');
-const errors = require('./middlewares/errors');
+const users = require('./controllers/user');
 
 exports.init = app => {
-  app.post('/signup', users.create);
+  app.post('/users', users.create);
 };

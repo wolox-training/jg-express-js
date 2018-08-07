@@ -1,53 +1,32 @@
-const errors = require('../errors');
-const user = require('../models/user');
-const pg = require('pg');
-const logger = require('../logger');
+exports.validateUser = user => {
+  const errorMsgs = [];
+  const validMail = /((^[0-9]+[a-z]+)|(^[a-z]+[0-9]+))*@wolox.com.ar/;
+  const validPass = /((^[0-9]+[a-z]+)|(^[a-z]+[0-9]+))+[0-9a-z]+$/i;
 
-const mailValid = mail => {
-  const valid = /^[a-z][a-z0-9_]*@wolox.com.ar/; // String with characters from a - z and alphanumeric with "@wolox.com.ar" ending
-  return valid.test(mail);
-};
-
-const mailUniq = mail => {
-  let valid = false;
-  if (mail !== user.email) {
-    valid = true;
-  }
-  return valid;
-};
-
-const correctPass = password => {
-  const valid = /^[a-z][a-z0-9_]{8,}$/; // String same as valid mail, but with a 8 characters restrict
-  return valid.test(password);
-};
-
-const connectionString = 'postgres://localhost/8000';
-
-function onConnect(err, client, done) {
-  if (err) {
-    logger.log.error(err);
-    process.exit(1);
-  }
-  client.end();
-}
-
-pg.connect(connectionString, onConnect); // Connecting to DB to verificate error
-
-exports.handle = (req, next) => {
-  if (!mailValid(req.user.email)) {
-    next(errors.defaultError('Not a valid mail'));
-    return;
+  if (user.firstName === undefined) {
+    errorMsgs.push('First name cannot be null.');
+  } else if (user.firstName.length <= 0) {
+    errorMsgs.push('First name cannot be empty.');
   }
 
-  if (!mailUniq(req.user.email)) {
-    next(errors.defaultError('Email exists'));
-    return;
+  if (user.lastName === undefined) {
+    errorMsgs.push('Last name cannot be null.');
+  } else if (user.lastName.length <= 0) {
+    errorMsgs.push('Last name cannot be empty.');
   }
 
-  if (!correctPass(req.user.password)) {
-    next(errors.defaultError('Wrong password'));
-    return;
+  if (user.email === undefined) {
+    errorMsgs.push('Email cannot be null.');
+  } else if (user.email.length <= 0) {
+    errorMsgs.push('Email cannot be empty and cannot be less than 8 characters');
+  } else {
+    if (!user.email.match(validMail)) {
+      errorMsgs.push('Email is not a valid email and/or not in the @wolox.com.ar domain.');
+    }
   }
-
-  next();
+  if (user.password === undefined) {
+    errorMsgs.push('Password cannot be null.');
+  } else if (!user.email.match(validPass) || user.password.lenght < 8) {
+    errorMsgs.push('Invalid password. Must be 8 alphanumeric characters or longer.');
+  }
 };
