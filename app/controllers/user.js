@@ -28,11 +28,10 @@ const newUser = body => {
 exports.createUser = (req, res, next) =>
   newUser(req.body)
     .then(user => {
-      User.createModel(user)
-        .then(createUser => {
-          logger.info(`User correctly created. Welcome, ${createUser.firstName} ${createUser.lastName}`);
-          res.status(201);
-        })
-        .catch(next);
+      User.createUser(user).then(createUser => {
+        logger.info(`User correctly created. Welcome, ${createUser.firstName} ${createUser.lastName}`);
+        res.status(201);
+      });
+      return newUser;
     })
     .catch(next);
