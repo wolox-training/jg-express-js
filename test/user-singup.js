@@ -80,29 +80,28 @@ describe('User', () => {
         .request(server)
         .post('/users')
         .send(userFailName)
-        .catch(res => {
-          expect(userFailName).to.be.a('object');
-          expect(userFailName)
-            .to.have.property('firstName')
-            .that.is.a('string')
-            .that.have.lengthOf.above(0);
-          dictum.chai(res, 'User fail with no-name');
+        .catch(err => {
+          expect(err.response).to.have.status(400);
+          expect(err.response.body).to.have.property('message');
+          expect(err.response.body.message).to.include('firstName cannot be null or empty');
+          expect(err.response.body).to.have.property('internal_code');
+          expect(err.response.body.internal_code).to.be.equal('Invalid_user');
+          dictum.chai(err.response, 'User fail with no-name');
           done();
-        })
-        .catch(done);
+        });
     });
     it('Should not create a user without Last Name', done => {
       chai
         .request(server)
         .post('/users')
         .send(userFailLastName)
-        .catch(res => {
-          expect(userFailLastName).to.be.a('object');
-          expect(userFailLastName)
-            .to.have.property('lastName')
-            .that.is.a('string')
-            .that.have.lengthOf.above(0);
-          dictum.chai(res, 'User fail with no-lastname');
+        .catch(err => {
+          expect(err.response).to.have.status(400);
+          expect(err.response.body).to.have.property('message');
+          expect(err.response.body.message).to.include('lastName cannot be null or empty');
+          expect(err.response.body).to.have.property('internal_code');
+          expect(err.response.body.internal_code).to.be.equal('Invalid_user');
+          dictum.chai(err.response, 'User fail with no-lastname');
           done();
         })
         .catch(done);
@@ -112,13 +111,13 @@ describe('User', () => {
         .request(server)
         .post('/users')
         .send(userFailEmail)
-        .catch(res => {
-          expect(userFailEmail).to.be.a('object');
-          expect(userFailEmail)
-            .to.have.property('email')
-            .that.is.a('string')
-            .that.have.lengthOf.above(0);
-          dictum.chai(res, 'User fail with no-email');
+        .catch(err => {
+          expect(err.response).to.have.status(400);
+          expect(err.response.body).to.have.property('message');
+          expect(err.response.body.message).to.include('email cannot be null or empty');
+          expect(err.response.body).to.have.property('internal_code');
+          expect(err.response.body.internal_code).to.be.equal('Invalid_user');
+          dictum.chai(err.response, 'User fail with no-email');
           done();
         })
         .catch(done);
@@ -128,13 +127,13 @@ describe('User', () => {
         .request(server)
         .post('/users')
         .send(userFailPass)
-        .catch(res => {
-          expect(userFailPass).to.be.a('object');
-          expect(userFailPass)
-            .to.have.property('password')
-            .that.is.a('string')
-            .that.have.lengthOf.above(0);
-          dictum.chai(res, 'User fail with no-password');
+        .catch(err => {
+          expect(err.response).to.have.status(400);
+          expect(err.response.body).to.have.property('message');
+          expect(err.response.body.message).to.include('password cannot be null or empty');
+          expect(err.response.body).to.have.property('internal_code');
+          expect(err.response.body.internal_code).to.be.equal('Invalid_user');
+          dictum.chai(err.response, 'User fail with no-password');
           done();
         })
         .catch(done);
@@ -144,13 +143,15 @@ describe('User', () => {
         .request(server)
         .post('/users')
         .send(userPassNoNumbers)
-        .catch(res => {
-          expect(userPassNoNumbers).to.be.a('object');
-          expect(userPassNoNumbers).to.have.property('password');
-          expect(userPassNoNumbers)
-            .to.have.property('password')
-            .that.match(/([A-Za-z]+[0-9]+)|([0-9]+[A-Za-z]+)/);
-          dictum.chai(res, 'User fail with no-numbers');
+        .catch(err => {
+          expect(err.response).to.have.status(400);
+          expect(err.response.body).to.have.property('message');
+          expect(err.response.body.message).to.include(
+            'Invalid password. Must be 8 alphanumeric characters or longer.'
+          );
+          expect(err.response.body).to.have.property('internal_code');
+          expect(err.response.body.internal_code).to.be.equal('Invalid_user');
+          dictum.chai(err.response, 'User fail with no-numbers');
           done();
         })
         .catch(done);
@@ -160,13 +161,15 @@ describe('User', () => {
         .request(server)
         .post('/users')
         .send(userPassNoLetters)
-        .catch(res => {
-          expect(userPassNoLetters).to.be.a('object');
-          expect(userPassNoLetters).to.have.property('password');
-          expect(userPassNoLetters)
-            .to.have.property('password')
-            .that.match(/([A-Za-z]+[0-9]+)|([0-9]+[A-Za-z]+)/);
-          dictum.chai(res, 'User fail with no-letters');
+        .catch(err => {
+          expect(err.response).to.have.status(400);
+          expect(err.response.body).to.have.property('message');
+          expect(err.response.body.message).to.include(
+            'Invalid password. Must be 8 alphanumeric characters or longer.'
+          );
+          expect(err.response.body).to.have.property('internal_code');
+          expect(err.response.body.internal_code).to.be.equal('Invalid_user');
+          dictum.chai(err.response, 'User fail with no-letters');
           done();
         })
         .catch(done);
@@ -176,13 +179,15 @@ describe('User', () => {
         .request(server)
         .post('/users')
         .send(userPassfiveCharacters)
-        .then(res => {
-          expect(userPassfiveCharacters).to.be.a('object');
-          expect(userPassfiveCharacters).to.have.property('password');
-          expect(userPassfiveCharacters)
-            .to.have.property('password')
-            .that.have.lengthOf(8);
-          dictum.chai(res, 'User fail with < 8 characters');
+        .catch(err => {
+          expect(err.response).to.have.status(400);
+          expect(err.response.body).to.have.property('message');
+          expect(err.response.body.message).to.include(
+            'Invalid password. Must be 8 alphanumeric characters or longer.'
+          );
+          expect(err.response.body).to.have.property('internal_code');
+          expect(err.response.body.internal_code).to.be.equal('Invalid_user');
+          dictum.chai(err.response, 'User fail with < 8 characters');
           done();
         })
         .catch(done);

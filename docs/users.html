@@ -9,4 +9,116 @@
 }</pre></div></div><div class="panel-body"><h4>Response Data</h4><div class="container"><h5>Status: 201</h5><h5>Headers</h5><pre>{
   "content-type": "application/json",
   "content-length": 99
-}</pre><h5>Body</h5><pre>{}</pre></div></div></div></div></div></body></html>
+}</pre><h5>Body</h5><pre>{}</pre></div></div></div></div><div class="panel panel-default"><div class="panel-heading" role="tab" id="heading-users-POST"><h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="collapse-users-POST" href="#collapse-users-POST">POST /users</a></h4></div><div id="collapse-users-POST" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-users-POST"><div class="panel-body"><h4>Request Data</h4><div class="container"><h5>Headers</h5><pre>{
+  "content-type": "application/json",
+  "content-length": 97
+}</pre><h5>Body</h5><pre>{
+  "firstName": "",
+  "lastName": "Gutierrez",
+  "email": "juangu43@wolox.com.ar",
+  "password": "pass12345678"
+}</pre></div></div><div class="panel-body"><h4>Response Data</h4><div class="container"><h5>Status: 400</h5><h5>Headers</h5><pre>{
+  "content-type": "application/json",
+  "content-length": 97
+}</pre><h5>Body</h5><pre>{
+  "message": [
+    "firstName cannot be null or empty"
+  ],
+  "internal_code": "Invalid_user"
+}</pre></div></div></div></div><div class="panel panel-default"><div class="panel-heading" role="tab" id="heading-users-POST"><h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="collapse-users-POST" href="#collapse-users-POST">POST /users</a></h4></div><div id="collapse-users-POST" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-users-POST"><div class="panel-body"><h4>Request Data</h4><div class="container"><h5>Headers</h5><pre>{
+  "content-type": "application/json",
+  "content-length": 92
+}</pre><h5>Body</h5><pre>{
+  "firstName": "Juan",
+  "lastName": "",
+  "email": "juangu43@wolox.com.ar",
+  "password": "pass12345678"
+}</pre></div></div><div class="panel-body"><h4>Response Data</h4><div class="container"><h5>Status: 400</h5><h5>Headers</h5><pre>{
+  "content-type": "application/json",
+  "content-length": 92
+}</pre><h5>Body</h5><pre>{
+  "message": [
+    "lastName cannot be null or empty"
+  ],
+  "internal_code": "Invalid_user"
+}</pre></div></div></div></div><div class="panel panel-default"><div class="panel-heading" role="tab" id="heading-users-POST"><h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="collapse-users-POST" href="#collapse-users-POST">POST /users</a></h4></div><div id="collapse-users-POST" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-users-POST"><div class="panel-body"><h4>Request Data</h4><div class="container"><h5>Headers</h5><pre>{
+  "content-type": "application/json",
+  "content-length": 80
+}</pre><h5>Body</h5><pre>{
+  "firstName": "Juan",
+  "lastName": "Gutierrez",
+  "email": "",
+  "password": "pass12345678"
+}</pre></div></div><div class="panel-body"><h4>Response Data</h4><div class="container"><h5>Status: 400</h5><h5>Headers</h5><pre>{
+  "content-type": "application/json",
+  "content-length": 80
+}</pre><h5>Body</h5><pre>{
+  "message": [
+    "email cannot be null or empty"
+  ],
+  "internal_code": "Invalid_user"
+}</pre></div></div></div></div><div class="panel panel-default"><div class="panel-heading" role="tab" id="heading-users-POST"><h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="collapse-users-POST" href="#collapse-users-POST">POST /users</a></h4></div><div id="collapse-users-POST" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-users-POST"><div class="panel-body"><h4>Request Data</h4><div class="container"><h5>Headers</h5><pre>{
+  "content-type": "application/json",
+  "content-length": 89
+}</pre><h5>Body</h5><pre>{
+  "firstName": "Juan",
+  "lastName": "Gutierrez",
+  "email": "juangu43@wolox.com.ar",
+  "password": ""
+}</pre></div></div><div class="panel-body"><h4>Response Data</h4><div class="container"><h5>Status: 400</h5><h5>Headers</h5><pre>{
+  "content-type": "application/json",
+  "content-length": 89
+}</pre><h5>Body</h5><pre>{
+  "message": [
+    "password cannot be null or empty"
+  ],
+  "internal_code": "Invalid_user"
+}</pre></div></div></div></div><div class="panel panel-default"><div class="panel-heading" role="tab" id="heading-users-POST"><h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="collapse-users-POST" href="#collapse-users-POST">POST /users</a></h4></div><div id="collapse-users-POST" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-users-POST"><div class="panel-body"><h4>Request Data</h4><div class="container"><h5>Headers</h5><pre>{
+  "content-type": "application/json",
+  "content-length": 107
+}</pre><h5>Body</h5><pre>{
+  "firstName": "Juan",
+  "lastName": "Gutierrez",
+  "email": "juangu43@wolox.com.ar",
+  "password": "passwordfortesting"
+}</pre></div></div><div class="panel-body"><h4>Response Data</h4><div class="container"><h5>Status: 400</h5><h5>Headers</h5><pre>{
+  "content-type": "application/json",
+  "content-length": 107
+}</pre><h5>Body</h5><pre>{
+  "message": [
+    "Invalid password. Must be 8 alphanumeric characters or longer."
+  ],
+  "internal_code": "Invalid_user"
+}</pre></div></div></div></div><div class="panel panel-default"><div class="panel-heading" role="tab" id="heading-users-POST"><h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="collapse-users-POST" href="#collapse-users-POST">POST /users</a></h4></div><div id="collapse-users-POST" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-users-POST"><div class="panel-body"><h4>Request Data</h4><div class="container"><h5>Headers</h5><pre>{
+  "content-type": "application/json",
+  "content-length": 100
+}</pre><h5>Body</h5><pre>{
+  "firstName": "Juan",
+  "lastName": "Gutierrez",
+  "email": "juangu43@wolox.com.ar",
+  "password": "12345678910"
+}</pre></div></div><div class="panel-body"><h4>Response Data</h4><div class="container"><h5>Status: 400</h5><h5>Headers</h5><pre>{
+  "content-type": "application/json",
+  "content-length": 100
+}</pre><h5>Body</h5><pre>{
+  "message": [
+    "Invalid password. Must be 8 alphanumeric characters or longer."
+  ],
+  "internal_code": "Invalid_user"
+}</pre></div></div></div></div><div class="panel panel-default"><div class="panel-heading" role="tab" id="heading-users-POST"><h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="collapse-users-POST" href="#collapse-users-POST">POST /users</a></h4></div><div id="collapse-users-POST" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-users-POST"><div class="panel-body"><h4>Request Data</h4><div class="container"><h5>Headers</h5><pre>{
+  "content-type": "application/json",
+  "content-length": 94
+}</pre><h5>Body</h5><pre>{
+  "firstName": "Juan",
+  "lastName": "Gutierrez",
+  "email": "juangu43@wolox.com.ar",
+  "password": "pass1"
+}</pre></div></div><div class="panel-body"><h4>Response Data</h4><div class="container"><h5>Status: 400</h5><h5>Headers</h5><pre>{
+  "content-type": "application/json",
+  "content-length": 94
+}</pre><h5>Body</h5><pre>{
+  "message": [
+    "Invalid password. Must be 8 alphanumeric characters or longer."
+  ],
+  "internal_code": "Invalid_user"
+}</pre></div></div></div></div></div></body></html>
