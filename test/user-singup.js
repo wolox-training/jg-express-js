@@ -1,4 +1,5 @@
 const chai = require('chai'),
+  User = require('../app/models').user,
   chaiHttp = require('chai-http'),
   dictum = require('dictum.js'),
   expect = chai.expect,
@@ -7,11 +8,11 @@ const chai = require('chai'),
 chai.use(chaiHttp);
 
 describe('User', () => {
-  describe('POST /user', () => {
+  describe('POST /users', () => {
     const testUser = {
       firstName: 'Juan',
       lastName: 'Gutierrez',
-      email: 'juangu@wolox.com.ar',
+      email: 'juanguti43@wolox.com.ar',
       password: 'pass12345678'
     };
     const userFailName = {
@@ -56,6 +57,18 @@ describe('User', () => {
       email: 'juangu43@wolox.com.ar',
       password: 'pass1'
     };
+    const emailNotWolox = {
+      firstName: 'Juan',
+      lastName: 'Gutierrez',
+      email: 'juangu43@hotmail.com',
+      password: 'pass12345678'
+    };
+    const emailExists = {
+      firstName: 'Juan',
+      lastName: 'Gutierrez',
+      email: 'juangu43@wolox.com.ar',
+      password: 'pass12345678'
+    };
     it('Should create a user', done => {
       chai
         .request(server)
@@ -63,14 +76,18 @@ describe('User', () => {
         .send(testUser)
         .then(res => {
           expect(res).to.have.status(201);
-          expect(testUser).to.be.a('object');
-          expect(testUser)
-            .to.have.property('firstName')
-            .that.is.a('string')
-            .that.have.lengthOf.above(0);
-          expect(testUser).to.have.property('lastName');
-          expect(testUser).to.have.property('email');
-          expect(testUser).to.have.property('password');
+          expect(res).to.be.a('object');
+          User.findOne({
+            attributes: ['email'],
+            where: {
+              email: 'email2@wolox.com.ar'
+            }
+          }).then(db => {
+            expect(db.firstName).to.eql(testUser.firstName);
+            expect(db.lastName).to.eql(testUser.lastName);
+            expect(db.password).to.eql(testUser.password);
+            expect(db.email).to.eql(testUser.email);
+          });
           dictum.chai(res, 'User creation');
           done();
         });
@@ -86,7 +103,6 @@ describe('User', () => {
           expect(err.response.body.message).to.include('firstName cannot be null or empty');
           expect(err.response.body).to.have.property('internal_code');
           expect(err.response.body.internal_code).to.be.equal('Invalid_user');
-          dictum.chai(err.response, 'User fail with no-name');
           done();
         });
     });
@@ -101,7 +117,6 @@ describe('User', () => {
           expect(err.response.body.message).to.include('lastName cannot be null or empty');
           expect(err.response.body).to.have.property('internal_code');
           expect(err.response.body.internal_code).to.be.equal('Invalid_user');
-          dictum.chai(err.response, 'User fail with no-lastname');
           done();
         });
     });
@@ -116,7 +131,6 @@ describe('User', () => {
           expect(err.response.body.message).to.include('email cannot be null or empty');
           expect(err.response.body).to.have.property('internal_code');
           expect(err.response.body.internal_code).to.be.equal('Invalid_user');
-          dictum.chai(err.response, 'User fail with no-email');
           done();
         });
     });
@@ -131,7 +145,6 @@ describe('User', () => {
           expect(err.response.body.message).to.include('password cannot be null or empty');
           expect(err.response.body).to.have.property('internal_code');
           expect(err.response.body.internal_code).to.be.equal('Invalid_user');
-          dictum.chai(err.response, 'User fail with no-password');
           done();
         });
     });
@@ -148,7 +161,6 @@ describe('User', () => {
           );
           expect(err.response.body).to.have.property('internal_code');
           expect(err.response.body.internal_code).to.be.equal('Invalid_user');
-          dictum.chai(err.response, 'User fail with no-numbers');
           done();
         });
     });
@@ -165,7 +177,6 @@ describe('User', () => {
           );
           expect(err.response.body).to.have.property('internal_code');
           expect(err.response.body.internal_code).to.be.equal('Invalid_user');
-          dictum.chai(err.response, 'User fail with no-letters');
           done();
         });
     });
@@ -182,7 +193,39 @@ describe('User', () => {
           );
           expect(err.response.body).to.have.property('internal_code');
           expect(err.response.body.internal_code).to.be.equal('Invalid_user');
-          dictum.chai(err.response, 'User fail with < 8 characters');
+          done();
+        });
+    });
+    it('Should not create a user with an invalid mail domain', done => {
+      chai
+        .request(server)
+        .post('/users')
+        .send(emailNotWolox)
+        .catch(err => {
+          expect(err.response).to.have.status(400);
+          expect(err.response.body).to.have.property('message');
+          expect(err.response.body.message).to.include(
+            'Email is not a valid email or not the @wolox.com.ar domain.'
+          );
+          expect(err.response.body).to.have.property('internal_code');
+          expect(err.response.body.internal_code).to.be.equal('Invalid_user');
+          done();
+        });
+    });
+    it('Should not create a user with a email already in use', done => {
+      chai
+        .request(server)
+        .post('/users')
+        .send(emailExists)
+        .then(() =>
+          chai
+            .request(server)
+            .post('/users')
+            .send(emailExists)
+        )
+        .catch(err => {
+          expect(err.response.body).to.have.property('message');
+          expect(err.response.body.message).to.equal('This email already exists');
           done();
         });
     });
