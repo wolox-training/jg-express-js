@@ -1,5 +1,7 @@
 'use strict';
 
+const errors = require('../errors');
+
 module.exports = (sequelize, DataTypes) => {
   const user = sequelize.define('user', {
     firstName: DataTypes.STRING,
@@ -7,5 +9,11 @@ module.exports = (sequelize, DataTypes) => {
     email: { type: DataTypes.STRING, unique: true },
     password: DataTypes.STRING
   });
+
+  user.createNewModel = User =>
+    user.create(User).catch(err => {
+      throw errors.databaseError(err.message);
+    });
+
   return user;
 };

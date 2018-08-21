@@ -1,4 +1,4 @@
-const User = require('../models/user').user,
+const User = require('../models').user,
   saltRounds = 10,
   validations = require('./validations'),
   bcrypt = require('bcryptjs'),
@@ -15,9 +15,9 @@ const newUser = body => {
       }
     : {};
 
-  const errMsg = validations.validateUser(createUser);
-  if (errMsg.length > 0) {
-    throw errors.invalidUser(errMsg);
+  const errorMsg = validations.validateUser(createUser);
+  if (errorMsg.length > 0) {
+    throw errors.invalidUser(errorMsg);
   } else {
     return bcrypt.hash(createUser.password, saltRounds).then(hash => {
       createUser.password = hash;
@@ -29,7 +29,7 @@ const newUser = body => {
 exports.createUser = (req, res, next) =>
   newUser(req.body)
     .then(user =>
-      newUser(user).then(createUser => {
+      User.create(user).then(createUser => {
         logger.info(`User correctly created. Welcome, ${createUser.firstName} ${createUser.lastName}`);
         res.status(201).end();
       })

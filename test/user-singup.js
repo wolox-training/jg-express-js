@@ -103,8 +103,7 @@ describe('User', () => {
           expect(err.response.body.internal_code).to.be.equal('Invalid_user');
           dictum.chai(err.response, 'User fail with no-lastname');
           done();
-        })
-        .catch(done);
+        });
     });
     it('Should not create a user without email', done => {
       chai
@@ -119,8 +118,7 @@ describe('User', () => {
           expect(err.response.body.internal_code).to.be.equal('Invalid_user');
           dictum.chai(err.response, 'User fail with no-email');
           done();
-        })
-        .catch(done);
+        });
     });
     it('Should not create a user without password', done => {
       chai
@@ -135,8 +133,7 @@ describe('User', () => {
           expect(err.response.body.internal_code).to.be.equal('Invalid_user');
           dictum.chai(err.response, 'User fail with no-password');
           done();
-        })
-        .catch(done);
+        });
     });
     it('Should not create a user with a only letters password', done => {
       chai
@@ -153,8 +150,7 @@ describe('User', () => {
           expect(err.response.body.internal_code).to.be.equal('Invalid_user');
           dictum.chai(err.response, 'User fail with no-numbers');
           done();
-        })
-        .catch(done);
+        });
     });
     it('Should not create a user with a only numbers password', done => {
       chai
@@ -171,8 +167,7 @@ describe('User', () => {
           expect(err.response.body.internal_code).to.be.equal('Invalid_user');
           dictum.chai(err.response, 'User fail with no-letters');
           done();
-        })
-        .catch(done);
+        });
     });
     it('Should not create a user with a password < 8 characters', done => {
       chai
@@ -189,8 +184,7 @@ describe('User', () => {
           expect(err.response.body.internal_code).to.be.equal('Invalid_user');
           dictum.chai(err.response, 'User fail with < 8 characters');
           done();
-        })
-        .catch(done);
+        });
     });
   });
 });

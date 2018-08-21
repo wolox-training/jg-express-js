@@ -1,9 +1,9 @@
 const dictum = require('dictum.js');
 
 dictum.document({
-  description: 'Some description for the given endpoint',
-  endpoint: '/some/endpoint',
-  method: 'GET',
+  description: 'Users endpoint',
+  endpoint: '/users',
+  method: 'POST',
   requestHeaders: {},
   requestPathParams: {},
   requestBodyParams: {},
