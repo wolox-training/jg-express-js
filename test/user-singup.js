@@ -8,7 +8,7 @@ const chai = require('chai'),
 chai.use(chaiHttp);
 
 describe('User', () => {
-  describe('POST /users', () => {
+  describe('POST /user', () => {
     const testUser = {
       firstName: 'Juan',
       lastName: 'Gutierrez',
@@ -76,20 +76,16 @@ describe('User', () => {
         .send(testUser)
         .then(res => {
           expect(res).to.have.status(201);
-          expect(res).to.be.a('object');
           User.findOne({
             attributes: ['email'],
             where: {
-              email: 'email2@wolox.com.ar'
+              email: 'juanguti43@wolox.com.ar'
             }
           }).then(db => {
-            expect(db.firstName).to.eql(testUser.firstName);
-            expect(db.lastName).to.eql(testUser.lastName);
-            expect(db.password).to.eql(testUser.password);
             expect(db.email).to.eql(testUser.email);
+            dictum.chai(res, 'User creation');
+            done();
           });
-          dictum.chai(res, 'User creation');
-          done();
         });
     });
     it('Should not create a user without First Name', done => {
@@ -224,8 +220,11 @@ describe('User', () => {
             .send(emailExists)
         )
         .catch(err => {
+          expect(err.response).to.have.status(400);
           expect(err.response.body).to.have.property('message');
           expect(err.response.body.message).to.equal('This email already exists');
+          expect(err.response.body).to.have.property('internal_code');
+          expect(err.response.body.internal_code).to.be.equal('Request_error');
           done();
         });
     });

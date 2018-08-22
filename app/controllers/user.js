@@ -29,7 +29,7 @@ const newUser = body => {
 exports.createUser = (req, res, next) =>
   newUser(req.body)
     .then(user =>
-      User.create(user).then(createUser => {
+      User.createNewModel(user).then(createUser => {
         logger.info(`User correctly created. Welcome, ${createUser.firstName} ${createUser.lastName}`);
         res.status(201).end();
       })

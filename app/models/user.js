@@ -3,7 +3,7 @@
 const errors = require('../errors');
 
 module.exports = (sequelize, DataTypes) => {
-  const user = sequelize.define('user', {
+  const User = sequelize.define('user', {
     firstName: DataTypes.STRING,
     lastName: DataTypes.STRING,
     email: {
@@ -15,10 +15,10 @@ module.exports = (sequelize, DataTypes) => {
     password: DataTypes.STRING
   });
 
-  user.createNewModel = User =>
-    user.create(User).catch(err => {
-      throw errors.databaseError(err.message);
+  User.createNewModel = user =>
+    User.create(user).catch(err => {
+      throw errors.requestError(err.message);
     });
 
-  return user;
+  return User;
 };
