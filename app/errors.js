@@ -11,3 +11,6 @@ exports.invalidUser = message => internalError(message, exports.INVALID_USER);
 
 exports.REQUEST_ERROR = 'Request_error';
 exports.requestError = message => internalError(message, exports.REQUEST_ERROR);
+
+exports.DATABASE_ERROR = 'Database_error';
+exports.databaseError = message => internalError(message, exports.DATABASE_ERROR);

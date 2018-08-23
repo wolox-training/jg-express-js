@@ -17,7 +17,10 @@ module.exports = (sequelize, DataTypes) => {
 
   User.createNewModel = user =>
     User.create(user).catch(err => {
-      throw errors.requestError(err.message);
+      if (err instanceof sequelize.UniqueConstraintError) {
+        throw errors.requestError(err.message);
+      }
+      throw errors.databaseError(err.message);
     });
 
   return User;

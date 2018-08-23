@@ -69,156 +69,118 @@ describe('User', () => {
       email: 'juangu43@wolox.com.ar',
       password: 'pass12345678'
     };
-    it('Should create a user', done => {
+    const creation = object =>
       chai
         .request(server)
         .post('/users')
-        .send(testUser)
-        .then(res => {
-          expect(res).to.have.status(201);
-          User.findOne({
-            attributes: ['email'],
-            where: {
-              email: 'juanguti43@wolox.com.ar'
-            }
-          }).then(db => {
-            expect(db.email).to.eql(testUser.email);
-            dictum.chai(res, 'User creation');
-            done();
-          });
+        .send(object);
+
+    it('Should create a user', done => {
+      creation(testUser).then(res => {
+        expect(res).to.have.status(201);
+        User.findOne({
+          attributes: ['email'],
+          where: {
+            email: 'juanguti43@wolox.com.ar'
+          }
+        }).then(db => {
+          expect(db.email).to.eql(testUser.email);
+          dictum.chai(res, 'User creation');
+          done();
         });
+      });
     });
     it('Should not create a user without First Name', done => {
-      chai
-        .request(server)
-        .post('/users')
-        .send(userFailName)
-        .catch(err => {
-          expect(err.response).to.have.status(400);
-          expect(err.response.body).to.have.property('message');
-          expect(err.response.body.message).to.include('firstName cannot be null or empty');
-          expect(err.response.body).to.have.property('internal_code');
-          expect(err.response.body.internal_code).to.be.equal('Invalid_user');
-          done();
-        });
+      creation(userFailName).catch(err => {
+        expect(err.response).to.have.status(400);
+        expect(err.response.body).to.have.property('message');
+        expect(err.response.body.message).to.include('firstName cannot be null or empty');
+        expect(err.response.body).to.have.property('internal_code');
+        expect(err.response.body.internal_code).to.be.equal('Invalid_user');
+        done();
+      });
     });
     it('Should not create a user without Last Name', done => {
-      chai
-        .request(server)
-        .post('/users')
-        .send(userFailLastName)
-        .catch(err => {
-          expect(err.response).to.have.status(400);
-          expect(err.response.body).to.have.property('message');
-          expect(err.response.body.message).to.include('lastName cannot be null or empty');
-          expect(err.response.body).to.have.property('internal_code');
-          expect(err.response.body.internal_code).to.be.equal('Invalid_user');
-          done();
-        });
+      creation(userFailLastName).catch(err => {
+        expect(err.response).to.have.status(400);
+        expect(err.response.body).to.have.property('message');
+        expect(err.response.body.message).to.include('lastName cannot be null or empty');
+        expect(err.response.body).to.have.property('internal_code');
+        expect(err.response.body.internal_code).to.be.equal('Invalid_user');
+        done();
+      });
     });
     it('Should not create a user without email', done => {
-      chai
-        .request(server)
-        .post('/users')
-        .send(userFailEmail)
-        .catch(err => {
-          expect(err.response).to.have.status(400);
-          expect(err.response.body).to.have.property('message');
-          expect(err.response.body.message).to.include('email cannot be null or empty');
-          expect(err.response.body).to.have.property('internal_code');
-          expect(err.response.body.internal_code).to.be.equal('Invalid_user');
-          done();
-        });
+      creation(userFailEmail).catch(err => {
+        expect(err.response).to.have.status(400);
+        expect(err.response.body).to.have.property('message');
+        expect(err.response.body.message).to.include('email cannot be null or empty');
+        expect(err.response.body).to.have.property('internal_code');
+        expect(err.response.body.internal_code).to.be.equal('Invalid_user');
+        done();
+      });
     });
     it('Should not create a user without password', done => {
-      chai
-        .request(server)
-        .post('/users')
-        .send(userFailPass)
-        .catch(err => {
-          expect(err.response).to.have.status(400);
-          expect(err.response.body).to.have.property('message');
-          expect(err.response.body.message).to.include('password cannot be null or empty');
-          expect(err.response.body).to.have.property('internal_code');
-          expect(err.response.body.internal_code).to.be.equal('Invalid_user');
-          done();
-        });
+      creation(userFailPass).catch(err => {
+        expect(err.response).to.have.status(400);
+        expect(err.response.body).to.have.property('message');
+        expect(err.response.body.message).to.include('password cannot be null or empty');
+        expect(err.response.body).to.have.property('internal_code');
+        expect(err.response.body.internal_code).to.be.equal('Invalid_user');
+        done();
+      });
     });
     it('Should not create a user with a only letters password', done => {
-      chai
-        .request(server)
-        .post('/users')
-        .send(userPassNoNumbers)
-        .catch(err => {
-          expect(err.response).to.have.status(400);
-          expect(err.response.body).to.have.property('message');
-          expect(err.response.body.message).to.include(
-            'Invalid password. Must be 8 alphanumeric characters or longer.'
-          );
-          expect(err.response.body).to.have.property('internal_code');
-          expect(err.response.body.internal_code).to.be.equal('Invalid_user');
-          done();
-        });
+      creation(userPassNoNumbers).catch(err => {
+        expect(err.response).to.have.status(400);
+        expect(err.response.body).to.have.property('message');
+        expect(err.response.body.message).to.include(
+          'Invalid password. Must be 8 alphanumeric characters or longer.'
+        );
+        expect(err.response.body).to.have.property('internal_code');
+        expect(err.response.body.internal_code).to.be.equal('Invalid_user');
+        done();
+      });
     });
     it('Should not create a user with a only numbers password', done => {
-      chai
-        .request(server)
-        .post('/users')
-        .send(userPassNoLetters)
-        .catch(err => {
-          expect(err.response).to.have.status(400);
-          expect(err.response.body).to.have.property('message');
-          expect(err.response.body.message).to.include(
-            'Invalid password. Must be 8 alphanumeric characters or longer.'
-          );
-          expect(err.response.body).to.have.property('internal_code');
-          expect(err.response.body.internal_code).to.be.equal('Invalid_user');
-          done();
-        });
+      creation(userPassNoLetters).catch(err => {
+        expect(err.response).to.have.status(400);
+        expect(err.response.body).to.have.property('message');
+        expect(err.response.body.message).to.include(
+          'Invalid password. Must be 8 alphanumeric characters or longer.'
+        );
+        expect(err.response.body).to.have.property('internal_code');
+        expect(err.response.body.internal_code).to.be.equal('Invalid_user');
+        done();
+      });
     });
     it('Should not create a user with a password < 8 characters', done => {
-      chai
-        .request(server)
-        .post('/users')
-        .send(userPassfiveCharacters)
-        .catch(err => {
-          expect(err.response).to.have.status(400);
-          expect(err.response.body).to.have.property('message');
-          expect(err.response.body.message).to.include(
-            'Invalid password. Must be 8 alphanumeric characters or longer.'
-          );
-          expect(err.response.body).to.have.property('internal_code');
-          expect(err.response.body.internal_code).to.be.equal('Invalid_user');
-          done();
-        });
+      creation(userPassfiveCharacters).catch(err => {
+        expect(err.response).to.have.status(400);
+        expect(err.response.body).to.have.property('message');
+        expect(err.response.body.message).to.include(
+          'Invalid password. Must be 8 alphanumeric characters or longer.'
+        );
+        expect(err.response.body).to.have.property('internal_code');
+        expect(err.response.body.internal_code).to.be.equal('Invalid_user');
+        done();
+      });
     });
     it('Should not create a user with an invalid mail domain', done => {
-      chai
-        .request(server)
-        .post('/users')
-        .send(emailNotWolox)
-        .catch(err => {
-          expect(err.response).to.have.status(400);
-          expect(err.response.body).to.have.property('message');
-          expect(err.response.body.message).to.include(
-            'Email is not a valid email or not the @wolox.com.ar domain.'
-          );
-          expect(err.response.body).to.have.property('internal_code');
-          expect(err.response.body.internal_code).to.be.equal('Invalid_user');
-          done();
-        });
+      creation(emailNotWolox).catch(err => {
+        expect(err.response).to.have.status(400);
+        expect(err.response.body).to.have.property('message');
+        expect(err.response.body.message).to.include(
+          'Email is not a valid email or not the @wolox.com.ar domain.'
+        );
+        expect(err.response.body).to.have.property('internal_code');
+        expect(err.response.body.internal_code).to.be.equal('Invalid_user');
+        done();
+      });
     });
     it('Should not create a user with a email already in use', done => {
-      chai
-        .request(server)
-        .post('/users')
-        .send(emailExists)
-        .then(() =>
-          chai
-            .request(server)
-            .post('/users')
-            .send(emailExists)
-        )
+      creation(emailExists)
+        .then(() => creation(emailExists))
         .catch(err => {
           expect(err.response).to.have.status(400);
           expect(err.response.body).to.have.property('message');
