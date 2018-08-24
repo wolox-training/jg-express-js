@@ -3,6 +3,7 @@ const User = require('../models').user,
   validations = require('./validations'),
   bcrypt = require('bcryptjs'),
   logger = require('../logger'),
+  tokens = require('../services/tokenGenerator'),
   errors = require('../errors');
 
 const newUser = body => {
@@ -35,3 +36,41 @@ exports.createUser = (req, res, next) =>
       })
     )
     .catch(next);
+
+exports.signIn = (req, res, next) => {
+  const singInUser = req.body
+    ? {
+        password: req.body.password,
+        email: req.body.email
+      }
+    : {};
+
+  const errMsg = validations.validateSignIn(singInUser);
+  if (errMsg.length > 0) {
+    next(errors.invalidUser(errMsg));
+  } else {
+    User.findOne({
+      attributes: ['email', 'password'],
+      where: {
+        email: singInUser.email
+      }
+    })
+      .then(db => {
+        if (db) {
+          return bcrypt.compare(singInUser.password, db.password).then(pass => {
+            if (pass) {
+              logger.info('User singed in');
+              const authentication = tokens.encode({ email: db.email });
+              res.set(tokens.header, authentication);
+              res.status(201).end();
+            } else {
+              next(errors.invalidUser('Email or password are incorrect.'));
+            }
+          });
+        } else {
+          next(errors.invalidUser('Cannot find that user or is invalid.'));
+        }
+      })
+      .catch(next);
+  }
+};

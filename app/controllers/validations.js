@@ -19,3 +19,15 @@ exports.validateUser = object => {
   }
   return errorMsgs;
 };
+
+exports.validateSignIn = object => {
+  const errorMsgs = [];
+  const validMail = /@wolox.com.ar\s*$/;
+  if (object.email && !object.email.match(validMail)) {
+    errorMsgs.push('Email is not a valid email or not the @wolox.com.ar domain.');
+  }
+  if (!object.password) {
+    errorMsgs.push('Password cannot be null or empty');
+  }
+  return errorMsgs;
+};
