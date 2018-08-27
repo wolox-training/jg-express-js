@@ -30,8 +30,8 @@ exports.validateToken = (req, res, next) => {
     try {
       const payload = tokens.decode(token);
       User.findOne({ where: { email: payload.email } })
-        .then(db => {
-          if (db) {
+        .then(Userdb => {
+          if (Userdb) {
             res.status(201).end();
           } else {
             next(errors.invalidToken('Invalid token.'));
