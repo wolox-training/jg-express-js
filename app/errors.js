@@ -14,3 +14,6 @@ exports.requestError = message => internalError(message, exports.REQUEST_ERROR);
 
 exports.DATABASE_ERROR = 'Database_error';
 exports.databaseError = message => internalError(message, exports.DATABASE_ERROR);
+
+exports.INVALID_TOKEN = 'Invalid_token';
+exports.invalidToken = message => internalError(message, exports.INVALID_TOKEN);

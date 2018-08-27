@@ -3,18 +3,38 @@ const chai = require('chai'),
   chaiHttp = require('chai-http'),
   dictum = require('dictum.js'),
   expect = chai.expect,
+  token = require('../app/services/tokenGenerator'),
   server = require('../app');
 
 chai.use(chaiHttp);
 
+const creation = object =>
+  chai
+    .request(server)
+    .post('/users')
+    .send(object);
+
+const postSession = object =>
+  chai
+    .request(server)
+    .post('/users/sessions')
+    .send(object);
+
+const testUser = {
+  firstName: 'Juan',
+  lastName: 'Gutierrez',
+  email: 'juanguti43@wolox.com.ar',
+  password: 'pass12345678'
+};
+const testUser2 = {
+  firstName: 'Martin',
+  lastName: 'Sr.Picollo',
+  email: 'srpicollo1234@wolox.com.ar',
+  password: 'gohan1234'
+};
+
 describe('User', () => {
   describe('POST /user', () => {
-    const testUser = {
-      firstName: 'Juan',
-      lastName: 'Gutierrez',
-      email: 'juanguti43@wolox.com.ar',
-      password: 'pass12345678'
-    };
     const userFailName = {
       firstName: '',
       lastName: 'Gutierrez',
@@ -69,11 +89,6 @@ describe('User', () => {
       email: 'juangu43@wolox.com.ar',
       password: 'pass12345678'
     };
-    const creation = object =>
-      chai
-        .request(server)
-        .post('/users')
-        .send(object);
 
     it('Should create a user', done => {
       creation(testUser).then(res => {
@@ -190,5 +205,109 @@ describe('User', () => {
           done();
         });
     });
+  });
+});
+
+describe('/users/sessions POST', () => {
+  const sessionOk = {
+    email: 'juanguti43@wolox.com.ar',
+    password: 'pass12345678'
+  };
+  const failDomain = {
+    email: 'juangu@hotmail.com',
+    password: 'pass123456'
+  };
+  const failRegistered = {
+    email: 'juanguti21@wolox.com.ar',
+    password: 'pass12345678'
+  };
+  const failPassword = {
+    email: 'juanguti43@wolox.com.ar',
+    password: 'passwordtesting1234'
+  };
+  const nullPassword = {
+    email: 'juanguti43@wolox.com.ar',
+    password: null
+  };
+  const nullEmail = {
+    email: null,
+    password: 'pass12345678'
+  };
+
+  it('Should Sing In a user', done => {
+    creation(testUser)
+      .then(() => postSession(sessionOk))
+      .then(res => {
+        expect(res.header).to.have.property('authorization');
+        expect(token.decode(res.header.authorization).email).to.equal(testUser.email);
+        expect(res).to.have.status(201);
+        dictum.chai(res, 'User Sing In');
+        done();
+      });
+  });
+
+  it('Should not sing in a user with an invalid domain', done => {
+    postSession(failDomain).catch(err => {
+      expect(err.response).to.have.status(400);
+      expect(err.response.body).to.have.property('message');
+      expect(err.response.body.message).to.include(
+        'Email is not a valid email or not the @wolox.com.ar domain.'
+      );
+      expect(err.response.body).to.have.property('internal_code');
+      expect(err.response.body.internal_code).to.be.equal('Invalid_user');
+      done();
+    });
+  });
+
+  it('Should not sing in a user when email is not registered or is invalid', done => {
+    creation(testUser)
+      .then(() => postSession(failRegistered))
+      .catch(err => {
+        expect(err.response).to.have.status(400);
+        expect(err.response.body).to.have.property('message');
+        expect(err.response.body).to.have.property('internal_code');
+        expect(err.response.body.message).to.equal(`Cannot find user ${failRegistered.email} or is invalid.`);
+        expect(err.response.body.internal_code).to.equal('Invalid_user');
+        done();
+      });
+  });
+
+  it('Should not sing in a user because password is incorrect', done => {
+    creation(testUser)
+      .then(() => postSession(failPassword))
+      .catch(err => {
+        expect(err.response).to.have.status(400);
+        expect(err.response.body).to.have.property('message');
+        expect(err.response.body).to.have.property('internal_code');
+        expect(err.response.body.message).to.equal(`Email ${failPassword.email} or password are incorrect.`);
+        expect(err.response.body.internal_code).to.equal('Invalid_user');
+        done();
+      });
+  });
+
+  it('Should not sing in a user with a null password', done => {
+    creation(testUser)
+      .then(() => postSession(nullPassword))
+      .catch(err => {
+        expect(err.response).to.have.status(400);
+        expect(err.response.body).to.have.property('message');
+        expect(err.response.body.message).to.include('password cannot be null or empty');
+        expect(err.response.body).to.have.property('internal_code');
+        expect(err.response.body.internal_code).to.equal('Invalid_user');
+        done();
+      });
+  });
+
+  it('Should not sing in a user with a null email', done => {
+    creation(testUser)
+      .then(() => postSession(nullEmail))
+      .catch(err => {
+        expect(err.response).to.have.status(400);
+        expect(err.response.body).to.have.property('message');
+        expect(err.response.body).to.have.property('internal_code');
+        expect(err.response.body.message).to.include('email cannot be null or empty');
+        expect(err.response.body.internal_code).to.equal('Invalid_user');
+        done();
+      });
   });
 });
