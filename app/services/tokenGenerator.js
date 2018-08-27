@@ -1,7 +1,7 @@
 const jwt = require('jwt-simple'),
   config = require('./../../config');
 
-const secret = Buffer.from('fe1a1915a379f3be5394b64d14794932', 'hex');
+const secret = config.common.session.secret;
 
 exports.header = config.common.session.header_name;
 exports.encode = payload => jwt.encode(payload, secret);

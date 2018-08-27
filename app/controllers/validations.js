@@ -1,3 +1,7 @@
+const tokens = require('../services/tokenGenerator'),
+  User = require('../models').user,
+  errors = require('../errors');
+
 const checkAllFields = object => {
   const errorField = [];
   Object.keys(object).forEach(key => {
@@ -20,14 +24,24 @@ exports.validateUser = object => {
   return errorMsgs;
 };
 
-exports.validateSignIn = object => {
-  const errorMsgs = [];
-  const validMail = /@wolox.com.ar\s*$/;
-  if (object.email && !object.email.match(validMail)) {
-    errorMsgs.push('Email is not a valid email or not the @wolox.com.ar domain.');
+exports.validateToken = (req, res, next) => {
+  const token = req.headers[tokens.headerName];
+  if (token) {
+    try {
+      const payload = tokens.decode(token);
+      User.findOne({ where: { email: payload.email } })
+        .then(db => {
+          if (db) {
+            res.status(201).end();
+          } else {
+            next(errors.invalidToken('Invalid token.'));
+          }
+        })
+        .catch(next);
+    } catch (err) {
+      next(errors.invalidToken(err.message));
+    }
+  } else {
+    next(errors.invalidToken('Token not found'));
   }
-  if (!object.password) {
-    errorMsgs.push('Password cannot be null or empty');
-  }
-  return errorMsgs;
 };

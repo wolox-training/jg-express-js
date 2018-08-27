@@ -26,6 +26,12 @@ const testUser = {
   email: 'juanguti43@wolox.com.ar',
   password: 'pass12345678'
 };
+const testUser2 = {
+  firstName: 'Martin',
+  lastName: 'Sr.Picollo',
+  email: 'srpicollo1234@wolox.com.ar',
+  password: 'gohan1234'
+};
 
 describe('User', () => {
   describe('POST /user', () => {
@@ -219,13 +225,13 @@ describe('/users/sessions POST', () => {
     email: 'juanguti43@wolox.com.ar',
     password: 'passwordtesting1234'
   };
-  const emptyPassword = {
-    email: 'juanguti43@wolox.com.ar',
-    password: ''
-  };
   const nullPassword = {
     email: 'juanguti43@wolox.com.ar',
     password: null
+  };
+  const nullEmail = {
+    email: null,
+    password: 'pass12345678'
   };
 
   it('Should Sing In a user', done => {
@@ -260,7 +266,7 @@ describe('/users/sessions POST', () => {
         expect(err.response).to.have.status(400);
         expect(err.response.body).to.have.property('message');
         expect(err.response.body).to.have.property('internal_code');
-        expect(err.response.body.message).to.equal('Cannot find that user or is invalid.');
+        expect(err.response.body.message).to.equal(`Cannot find user ${failRegistered.email} or is invalid.`);
         expect(err.response.body.internal_code).to.equal('Invalid_user');
         done();
       });
@@ -273,33 +279,33 @@ describe('/users/sessions POST', () => {
         expect(err.response).to.have.status(400);
         expect(err.response.body).to.have.property('message');
         expect(err.response.body).to.have.property('internal_code');
-        expect(err.response.body.message).to.equal('Email or password are incorrect.');
+        expect(err.response.body.message).to.equal(`Email ${failPassword.email} or password are incorrect.`);
         expect(err.response.body.internal_code).to.equal('Invalid_user');
         done();
       });
   });
 
-  it('Should not sing in a user with a empty password', done => {
-    creation(testUser)
-      .then(() => postSession(emptyPassword))
-      .catch(err => {
-        expect(err.response).to.have.status(400);
-        expect(err.response.body).to.have.property('message');
-        expect(err.response.body).to.have.property('internal_code');
-        expect(err.response.body.message).to.include('Password cannot be null or empty');
-        expect(err.response.body.internal_code).to.equal('Invalid_user');
-        done();
-      });
-  });
-
-  it('Should not sing in a user with a empty password', done => {
+  it('Should not sing in a user with a null password', done => {
     creation(testUser)
       .then(() => postSession(nullPassword))
       .catch(err => {
         expect(err.response).to.have.status(400);
         expect(err.response.body).to.have.property('message');
-        expect(err.response.body.message).to.include('Password cannot be null or empty');
+        expect(err.response.body.message).to.include('password cannot be null or empty');
         expect(err.response.body).to.have.property('internal_code');
+        expect(err.response.body.internal_code).to.equal('Invalid_user');
+        done();
+      });
+  });
+
+  it('Should not sing in a user with a null email', done => {
+    creation(testUser)
+      .then(() => postSession(nullEmail))
+      .catch(err => {
+        expect(err.response).to.have.status(400);
+        expect(err.response.body).to.have.property('message');
+        expect(err.response.body).to.have.property('internal_code');
+        expect(err.response.body.message).to.include('email cannot be null or empty');
         expect(err.response.body.internal_code).to.equal('Invalid_user');
         done();
       });
