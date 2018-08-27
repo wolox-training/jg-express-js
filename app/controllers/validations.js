@@ -1,4 +1,5 @@
 const tokens = require('../services/tokenGenerator'),
+  logger = require('../logger'),
   User = require('../models').user,
   errors = require('../errors');
 
@@ -22,26 +23,4 @@ exports.validateUser = object => {
     errorMsgs.push('Invalid password. Must be 8 alphanumeric characters or longer.');
   }
   return errorMsgs;
-};
-
-exports.validateToken = (req, res, next) => {
-  const token = req.headers[tokens.headerName];
-  if (token) {
-    try {
-      const payload = tokens.decode(token);
-      User.findOne({ where: { email: payload.email } })
-        .then(db => {
-          if (db) {
-            res.status(201).end();
-          } else {
-            next(errors.invalidToken('Invalid token.'));
-          }
-        })
-        .catch(next);
-    } catch (err) {
-      next(errors.invalidToken(err.message));
-    }
-  } else {
-    next(errors.invalidToken('Token not found'));
-  }
 };

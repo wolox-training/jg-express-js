@@ -35,3 +35,21 @@ exports.createUser = (req, res, next) =>
       })
     )
     .catch(next);
+
+exports.getListUsers = (req, res, next) => {
+  const limit = req.query.limit || 10;
+  const offset = req.query.page || 0;
+  return User.findAndCountAll({
+    attributes: ['firstName', 'lastName', 'email'],
+    limit,
+    offset,
+    order: [['email', 'ASC']]
+  })
+    .catch(err => {
+      throw errors.databaseError(err.message);
+    })
+    .then(getUsers => {
+      res.send(getUsers);
+    })
+    .catch(next);
+};

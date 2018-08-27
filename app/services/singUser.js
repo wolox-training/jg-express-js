@@ -33,7 +33,7 @@ exports.signIn = (req, res, next) => {
               logger.info(`User ${userFound.email} singed in`);
               const authentication = tokens.encode({ email: userFound.email });
               res.set(tokens.header, authentication);
-              res.status(201).end();
+              res.status(200).end();
             } else {
               next(errors.invalidUser(`Email ${singInUser.email} or password are incorrect.`));
             }
