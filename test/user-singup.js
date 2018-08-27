@@ -240,7 +240,7 @@ describe('/users/sessions POST', () => {
       .then(res => {
         expect(res.header).to.have.property('authorization');
         expect(token.decode(res.header.authorization).email).to.equal(testUser.email);
-        expect(res).to.have.status(201);
+        expect(res).to.have.status(200);
         dictum.chai(res, 'User Sing In');
         done();
       });
@@ -309,5 +309,43 @@ describe('/users/sessions POST', () => {
         expect(err.response.body.internal_code).to.equal('Invalid_user');
         done();
       });
+  });
+  describe('/users GET', () => {
+    it('Should not get the list without a token', done => {
+      chai
+        .request(server)
+        .get('/users')
+        .query({
+          page: 0,
+          limit: 10
+        })
+        .catch(err => {
+          expect(err.response).to.have.status(401);
+          expect(err.response.body).to.have.property('message');
+          expect(err.response.body).to.have.property('internal_code');
+          expect(err.response.body.message).to.equal('Token not found');
+          expect(err.response.body.internal_code).to.equal('Invalid_token');
+          done();
+        });
+    });
+
+    it('Should fail because token its wrong', done => {
+      chai
+        .request(server)
+        .get('/users')
+        .set(token.header, token.encode({ email: 'testasd123@wolox.com.ar' }))
+        .query({
+          page: 1,
+          limit: 10
+        })
+        .catch(err => {
+          expect(err.response).to.have.status(401);
+          expect(err.response.body).to.have.property('message');
+          expect(err.response.body).to.have.property('internal_code');
+          expect(err.response.body.message).to.equal('Invalid token.');
+          expect(err.response.body.internal_code).to.equal('Invalid_token');
+          done();
+        });
+    });
   });
 });
