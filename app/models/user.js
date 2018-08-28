@@ -23,5 +23,13 @@ module.exports = (sequelize, DataTypes) => {
       throw errors.databaseError(err.message);
     });
 
+  User.getUser = (userInfo, where) =>
+    User.findOne({
+      userInfo,
+      where
+    }).catch(err => {
+      throw errors.databaseError(err.message);
+    });
+
   return User;
 };

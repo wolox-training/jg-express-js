@@ -20,6 +20,16 @@ const postSession = object =>
     .post('/users/sessions')
     .send(object);
 
+const setToken = (tokenHeader, tokenEncode) =>
+  chai
+    .request(server)
+    .get('/users')
+    .set(tokenHeader, tokenEncode)
+    .query({
+      page: 0,
+      limit: 10
+    });
+
 const testUser = {
   firstName: 'Juan',
   lastName: 'Gutierrez',
@@ -29,7 +39,7 @@ const testUser = {
 const testUser2 = {
   firstName: 'Martin',
   lastName: 'Sr.Picollo',
-  email: 'srpicollo1234@wolox.com.ar',
+  email: 'srpicollo12@wolox.com.ar',
   password: 'gohan1234'
 };
 
@@ -311,6 +321,19 @@ describe('/users/sessions POST', () => {
       });
   });
   describe('/users GET', () => {
+    it('Should be succesfull', done => {
+      creation(testUser)
+        .then(() => postSession(sessionOk))
+        .then(() => setToken(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' })))
+        .then(res => {
+          expect(token.header).to.equal('authorization');
+          expect(res).to.be.a('object');
+          expect(res).to.have.status(200);
+          dictum.chai(res, 'User list get succesfull');
+          done();
+        });
+    });
+
     it('Should not get the list without a token', done => {
       chai
         .request(server)
@@ -333,9 +356,9 @@ describe('/users/sessions POST', () => {
       chai
         .request(server)
         .get('/users')
-        .set(token.header, token.encode({ email: 'testasd123@wolox.com.ar' }))
+        .set(token.header, token.encode({ email: 'test-asd123@wolox.com.ar' }))
         .query({
-          page: 1,
+          page: 0,
           limit: 10
         })
         .catch(err => {

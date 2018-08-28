@@ -1,5 +1,5 @@
 const User = require('../models').user,
-  validations = require('../controllers/validations'),
+  validations = require('./validations'),
   bcrypt = require('bcryptjs'),
   logger = require('../logger'),
   tokens = require('../services/tokenGenerator'),
@@ -17,15 +17,7 @@ exports.signIn = (req, res, next) => {
   if (errMsg.length > 0) {
     next(errors.invalidUser(errMsg));
   } else {
-    User.findOne({
-      attributes: ['email', 'password'],
-      where: {
-        email: singInUser.email
-      }
-    })
-      .catch(err => {
-        throw errors.databaseError(err.message);
-      })
+    User.getUser(['email', 'password'], { email: singInUser.email })
       .then(userFound => {
         if (userFound) {
           return bcrypt.compare(singInUser.password, userFound.password).then(passwordValid => {
