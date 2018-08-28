@@ -12,7 +12,11 @@ module.exports = (sequelize, DataTypes) => {
         msg: 'This email already exists'
       }
     },
-    password: DataTypes.STRING
+    password: DataTypes.STRING,
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   });
 
   User.createNewModel = user =>
@@ -28,6 +32,11 @@ module.exports = (sequelize, DataTypes) => {
       userInfo,
       where
     }).catch(err => {
+      throw errors.databaseError(err.message);
+    });
+
+  User.doUpsert = object =>
+    User.upsert(object).catch(err => {
       throw errors.databaseError(err.message);
     });
 

@@ -53,3 +53,19 @@ exports.getListUsers = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.newAdmin = (req, res, next) =>
+  newUser(req.body)
+    .then(createAdmin => {
+      createAdmin.isAdmin = true;
+      return User.doUpsert(createAdmin).then(isCreated => {
+        isCreated
+          ? logger.info(`New admin created: ${User.email}`)
+          : logger.info(`User: ${User.email} its now an admin`);
+        res.status(201).end();
+      });
+    })
+    .catch(err => {
+      throw errors.databaseError(err.message);
+    })
+    .catch(next);
