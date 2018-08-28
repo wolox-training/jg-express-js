@@ -328,6 +328,8 @@ describe('/users/sessions POST', () => {
         .then(res => {
           expect(token.header).to.equal('authorization');
           expect(res).to.be.a('object');
+          expect(res.body.rows.length).to.eql(1);
+          expect(res.body.count).to.eql(1);
           expect(res).to.have.status(200);
           dictum.chai(res, 'User list get succesfull');
           done();

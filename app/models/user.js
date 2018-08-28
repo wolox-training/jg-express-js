@@ -23,10 +23,20 @@ module.exports = (sequelize, DataTypes) => {
       throw errors.databaseError(err.message);
     });
 
-  User.getUser = (userInfo, where) =>
+  User.searchUserWhere = (userInfo, where) =>
     User.findOne({
       userInfo,
       where
+    }).catch(err => {
+      throw errors.databaseError(err.message);
+    });
+
+  User.paginationUsers = (limit, offset) =>
+    User.findAndCountAll({
+      attributes: ['firstName', 'lastName', 'email'],
+      limit,
+      offset,
+      order: [['email', 'ASC']]
     }).catch(err => {
       throw errors.databaseError(err.message);
     });
