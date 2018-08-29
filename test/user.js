@@ -26,8 +26,8 @@ const setToken = (tokenHeader, tokenEncode) =>
     .get('/users')
     .set(tokenHeader, tokenEncode)
     .query({
-      page: 0,
-      limit: 10
+      limit: 10,
+      offset: 0
     });
 
 const testUser = {
@@ -328,10 +328,18 @@ describe('/users/sessions POST', () => {
         .then(res => {
           expect(token.header).to.equal('authorization');
           expect(res).to.be.a('object');
-          expect(res.body.rows.length).to.eql(1);
-          expect(res.body.count).to.eql(1);
+          expect(res.body).to.have.property('count');
+          expect(res.body).to.have.property('rows');
+          expect(res.body.count).to.be.eql(1);
+          expect(res.body.rows).to.have.lengthOf(1);
+          expect(res.body.rows[0]).to.have.property('firstName');
+          expect(res.body.rows[0]).to.have.property('lastName');
+          expect(res.body.rows[0]).to.have.property('email');
+          expect(res.body.limit).to.eql(setToken.limit);
+          expect(res.body.offset).to.eql(setToken.offset);
+          expect(res.body.count).to.be.above(0);
           expect(res).to.have.status(200);
-          dictum.chai(res, 'User list get succesfull');
+          dictum.chai(res, 'User list get succesfully');
           done();
         });
     });
@@ -341,8 +349,8 @@ describe('/users/sessions POST', () => {
         .request(server)
         .get('/users')
         .query({
-          page: 0,
-          limit: 10
+          limit: 10,
+          offset: 0
         })
         .catch(err => {
           expect(err.response).to.have.status(401);
@@ -360,8 +368,8 @@ describe('/users/sessions POST', () => {
         .get('/users')
         .set(token.header, token.encode({ email: 'test-asd123@wolox.com.ar' }))
         .query({
-          page: 0,
-          limit: 10
+          limit: 10,
+          offset: 0
         })
         .catch(err => {
           expect(err.response).to.have.status(401);

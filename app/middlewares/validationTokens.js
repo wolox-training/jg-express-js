@@ -9,10 +9,13 @@ exports.validateToken = (req, res, next) => {
     try {
       const payload = tokens.decode(token);
       return User.findOne({ where: { email: payload.email } })
+        .catch(err => {
+          throw errors.databaseError(err.message);
+        })
         .then(userDb => {
           if (userDb) {
             logger.info(`User: ${payload.email} success token`);
-            req = userDb;
+            req = userDb.user;
             next();
           } else {
             next(errors.invalidToken('Invalid token.'));
