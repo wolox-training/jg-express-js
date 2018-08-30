@@ -370,5 +370,52 @@ describe('/users/sessions POST', () => {
           done();
         });
     });
+
+    describe('/admin/users POST', () => {
+      it('Should fail because user is not an admin', done => {
+        creation(testUser).then(user => {
+          chai
+            .request(server)
+            .post('/users/admins')
+            .set(token.header, token.encode({ email: user.email }))
+            .send({
+              firstName: user.firstName,
+              lastName: user.lastName,
+              password: 'pass1234failtesting',
+              email: user.email
+            })
+            .catch(err => {
+              expect(err.response).to.have.status(401);
+              expect(err.response.body).to.have.property('message');
+              expect(err.response.body).to.have.property('internal_code');
+              expect(err.response.body.message).to.equal('Invalid token.');
+              expect(err.response.body.internal_code).to.equal('Invalid_token');
+              done();
+            });
+        });
+      });
+
+      it('Should fail because arguments are not valid', done => {
+        creation(testUser).then(admin => {
+          chai
+            .request(server)
+            .post('/users/admins')
+            .set(token.header, token.encode({ email: admin.email }))
+            .send({
+              firstName: '',
+              lastName: '',
+              password: 'pas12314fail',
+              email: 'juanguti43@hotmail.com'
+            })
+            .catch(err => {
+              expect(err.response).to.have.status(401);
+              expect(err.response.body).to.have.property('message');
+              expect(err.response.body).to.have.property('internal_code');
+              expect(err.response.body.internal_code).to.equal('Invalid_token');
+              done();
+            });
+        });
+      });
+    });
   });
 });

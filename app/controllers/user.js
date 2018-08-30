@@ -40,7 +40,7 @@ exports.getListUsers = (req, res, next) => {
   const limit = req.query.limit || 10;
   const offset = req.query.page || 0;
   return User.findAndCountAll({
-    attributes: ['firstName', 'lastName', 'email'],
+    attributes: ['firstName', 'lastName', 'email', 'isAdmin'],
     limit,
     offset,
     order: [['email', 'ASC']]
@@ -60,8 +60,8 @@ exports.newAdmin = (req, res, next) =>
       createAdmin.isAdmin = true;
       return User.doUpsert(createAdmin).then(isCreated => {
         isCreated
-          ? logger.info(`New admin created: ${User.email}`)
-          : logger.info(`User: ${User.email} its now an admin`);
+          ? logger.info(`New admin created: ${createAdmin.email}`)
+          : logger.info(`User: ${createAdmin.email} its now an admin`);
         res.status(201).end();
       });
     })

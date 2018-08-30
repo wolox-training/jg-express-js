@@ -28,8 +28,8 @@ exports.validateToken = (req, res, next) => {
 };
 
 exports.validateAdmin = (req, res, next) => {
-  if (!req.User.isAdmin) {
-    next(errors.invalidUser(`User ${User.email} do not have the required privileges`));
+  if (!req.body.isAdmin) {
+    next(errors.invalidUser(`User ${req.body.email} do not have the required privileges`));
   } else {
     next();
   }
