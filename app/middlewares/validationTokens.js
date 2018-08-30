@@ -8,10 +8,7 @@ exports.validateToken = (req, res, next) => {
   if (token) {
     try {
       const payload = tokens.decode(token);
-      return User.findOne({ where: { email: payload.email } })
-        .catch(err => {
-          throw errors.databaseError(err.message);
-        })
+      return User.findOneUserWhere({ email: payload.email })
         .then(userDb => {
           if (userDb) {
             logger.info(`User: ${payload.email} success token`);

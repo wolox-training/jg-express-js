@@ -71,9 +71,9 @@ exports.createUser = (req, res, next) =>
     .catch(next);
 
 exports.getListUsers = (req, res, next) => {
-  const limit = req.query.limit || 10;
-  const offset = (req.query.page - 1) * limit || 0;
+  const limit = req.query.limit || 5;
+  const offset = (req.query.page - 1 || 0) * limit || 0;
   return User.paginationUsers(limit, offset)
-    .then(data => res.send(data, limit, offset))
+    .then(data => res.send(data))
     .catch(next);
 };

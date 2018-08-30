@@ -4,9 +4,11 @@ const chai = require('chai'),
   dictum = require('dictum.js'),
   expect = chai.expect,
   token = require('../app/services/tokenGenerator'),
+  dataCreation = require('../scripts/dataCreation'),
   server = require('../app');
 
 chai.use(chaiHttp);
+dataCreation.execute();
 
 const creation = object =>
   chai
@@ -20,14 +22,14 @@ const postSession = object =>
     .post('/users/sessions')
     .send(object);
 
-const setToken = (tokenHeader, tokenEncode) =>
+const generateToken = (tokenHeader, tokenEncode) =>
   chai
     .request(server)
     .get('/users')
     .set(tokenHeader, tokenEncode)
     .query({
-      limit: 10,
-      offset: 0
+      limit: 5,
+      page: 0
     });
 
 const testUser = {
@@ -324,23 +326,31 @@ describe('/users/sessions POST', () => {
     it('Should be succesfull', done => {
       creation(testUser)
         .then(() => postSession(sessionOk))
-        .then(() => setToken(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' })))
+        .then(() => generateToken(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' })))
         .then(res => {
           expect(token.header).to.equal('authorization');
           expect(res).to.be.a('object');
           expect(res.body).to.have.property('count');
           expect(res.body).to.have.property('rows');
-          expect(res.body.count).to.be.eql(1);
-          expect(res.body.rows).to.have.lengthOf(1);
-          expect(res.body.rows[0]).to.have.property('firstName');
-          expect(res.body.rows[0]).to.have.property('lastName');
-          expect(res.body.rows[0]).to.have.property('email');
-          expect(res.body.limit).to.eql(setToken.limit);
-          expect(res.body.offset).to.eql(setToken.offset);
+          expect(res.body.count).to.eql(8);
+          expect(res.body.rows.length).to.eql(5);
           expect(res.body.count).to.be.above(0);
           expect(res).to.have.status(200);
           dictum.chai(res, 'User list get succesfully');
-          done();
+          chai
+            .request(server)
+            .get('/users')
+            .set(token.header, token.encode({ email: 'email1@gmail.com' }))
+            .query({
+              limit: 3,
+              page: 1
+            })
+            .then(res2 => {
+              expect(res).to.have.status(200);
+              expect(res2.body.rows.length).to.eql(3);
+              expect(res2.body.count).to.eql(8);
+              done();
+            });
         });
     });
 
@@ -349,8 +359,8 @@ describe('/users/sessions POST', () => {
         .request(server)
         .get('/users')
         .query({
-          limit: 10,
-          offset: 0
+          limit: 5,
+          page: 0
         })
         .catch(err => {
           expect(err.response).to.have.status(401);
@@ -368,8 +378,8 @@ describe('/users/sessions POST', () => {
         .get('/users')
         .set(token.header, token.encode({ email: 'test-asd123@wolox.com.ar' }))
         .query({
-          limit: 10,
-          offset: 0
+          limit: 5,
+          page: 0
         })
         .catch(err => {
           expect(err.response).to.have.status(401);
