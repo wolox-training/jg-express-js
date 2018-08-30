@@ -4,9 +4,11 @@ const chai = require('chai'),
   dictum = require('dictum.js'),
   expect = chai.expect,
   token = require('../app/services/tokenGenerator'),
+  dataCreation = require('../scripts/dataCreation'),
   server = require('../app');
 
 chai.use(chaiHttp);
+dataCreation.execute();
 
 const creation = object =>
   chai
