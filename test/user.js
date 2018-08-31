@@ -22,14 +22,14 @@ const postSession = object =>
     .post('/users/sessions')
     .send(object);
 
-const setToken = (tokenHeader, tokenEncode) =>
+const generateToken = (tokenHeader, tokenEncode) =>
   chai
     .request(server)
     .get('/users')
     .set(tokenHeader, tokenEncode)
     .query({
-      page: 0,
-      limit: 10
+      limit: 5,
+      page: 0
     });
 
 const testUser = {
@@ -326,13 +326,31 @@ describe('/users/sessions POST', () => {
     it('Should be succesfull', done => {
       creation(testUser)
         .then(() => postSession(sessionOk))
-        .then(() => setToken(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' })))
+        .then(() => generateToken(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' })))
         .then(res => {
           expect(token.header).to.equal('authorization');
           expect(res).to.be.a('object');
+          expect(res.body).to.have.property('count');
+          expect(res.body).to.have.property('rows');
+          expect(res.body.count).to.eql(8);
+          expect(res.body.rows.length).to.eql(5);
+          expect(res.body.count).to.be.above(0);
           expect(res).to.have.status(200);
-          dictum.chai(res, 'User list get succesfull');
-          done();
+          dictum.chai(res, 'User list get succesfully');
+          chai
+            .request(server)
+            .get('/users')
+            .set(token.header, token.encode({ email: 'email1@gmail.com' }))
+            .query({
+              limit: 3,
+              page: 1
+            })
+            .then(res2 => {
+              expect(res).to.have.status(200);
+              expect(res2.body.rows.length).to.eql(3);
+              expect(res2.body.count).to.eql(8);
+              done();
+            });
         });
     });
 
@@ -341,8 +359,8 @@ describe('/users/sessions POST', () => {
         .request(server)
         .get('/users')
         .query({
-          page: 0,
-          limit: 10
+          limit: 5,
+          page: 0
         })
         .catch(err => {
           expect(err.response).to.have.status(401);
@@ -360,8 +378,8 @@ describe('/users/sessions POST', () => {
         .get('/users')
         .set(token.header, token.encode({ email: 'test-asd123@wolox.com.ar' }))
         .query({
-          page: 0,
-          limit: 10
+          limit: 5,
+          page: 0
         })
         .catch(err => {
           expect(err.response).to.have.status(401);
@@ -417,6 +435,53 @@ describe('/users/sessions POST', () => {
               done();
             });
         });
+      });
+
+      it('Should create a new admin', done => {
+        chai
+          .request(server)
+          .post('/users/admins')
+          .set(token.header, token.encode({ email: 'admin@wolox.com.ar' }))
+          .send({
+            firstName: 'Gohan',
+            lastName: 'testing',
+            password: 'pass1234',
+            email: 'gohanss2@wolox.com.ar'
+          })
+          .then(res => {
+            expect(res).to.have.status(201);
+            User.findOneUserWhere({ email: 'gohanss2@wolox.com.ar' }).then(UserDb => {
+              expect(UserDb.firstName).to.eql('Gohan');
+              expect(UserDb.lastName).to.eql('testing');
+              expect(UserDb.email).to.eql('gohanss2@wolox.com.ar');
+              expect(UserDb.isAdmin).to.eql(true);
+              dictum.chai(res);
+              done();
+            });
+          });
+      });
+      it('Should update a new user like an admin', done => {
+        chai
+          .request(server)
+          .post('/users/admins')
+          .set(token.header, token.encode({ email: 'admin@wolox.com.ar' }))
+          .send({
+            firstName: 'testingAdmin',
+            lastName: 'testingAdmin',
+            password: 'pass1234',
+            email: 'testingadmin@wolox.com.ar'
+          })
+          .then(res => {
+            expect(res).to.have.status(201);
+            User.findOneUserWhere({ email: 'testingadmin@wolox.com.ar' }).then(UserDb => {
+              expect(UserDb.firstName).to.eql('testingAdmin');
+              expect(UserDb.lastName).to.eql('testingAdmin');
+              expect(UserDb.email).to.eql('testingadmin@wolox.com.ar');
+              expect(UserDb.isAdmin).to.eql(true);
+              dictum.chai(res);
+              done();
+            });
+          });
       });
     });
   });

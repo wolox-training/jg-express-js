@@ -63,15 +63,6 @@ exports.execute = () => {
         );
         data.push(
           User.create({
-            firstName: 'firstName7',
-            lastName: 'lastName7',
-            username: 'username7',
-            email: 'email7@gmail.com',
-            password: hash
-          })
-        );
-        data.push(
-          User.create({
             firstName: 'admin',
             lastName: 'root',
             username: 'admin1',
