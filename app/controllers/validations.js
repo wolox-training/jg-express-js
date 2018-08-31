@@ -1,3 +1,8 @@
+const tokens = require('../services/tokenGenerator'),
+  logger = require('../logger'),
+  User = require('../models').user,
+  errors = require('../errors');
+
 const checkAllFields = object => {
   const errorField = [];
   Object.keys(object).forEach(key => {
