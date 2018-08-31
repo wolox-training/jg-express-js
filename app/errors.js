@@ -17,3 +17,6 @@ exports.databaseError = message => internalError(message, exports.DATABASE_ERROR
 
 exports.INVALID_TOKEN = 'Invalid_token';
 exports.invalidToken = message => internalError(message, exports.INVALID_TOKEN);
+
+exports.USER_UNAUTHORIZED = 'User_unauthorized';
+exports.userUnauthorized = message => internalError(message, exports.USER_UNAUTHORIZED);

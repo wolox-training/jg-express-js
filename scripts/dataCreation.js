@@ -63,11 +63,12 @@ exports.execute = () => {
         );
         data.push(
           User.create({
-            firstName: 'firstName7',
-            lastName: 'lastName7',
-            username: 'username7',
-            email: 'email7@gmail.com',
-            password: hash
+            firstName: 'admin',
+            lastName: 'root',
+            username: 'admin1',
+            email: 'admin@wolox.com.ar',
+            password: 'root1234',
+            isAdmin: true
           })
         );
         return Promise.all(data);

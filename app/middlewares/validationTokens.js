@@ -12,7 +12,7 @@ exports.validateToken = (req, res, next) => {
         .then(userDb => {
           if (userDb) {
             logger.info(`User: ${payload.email} success token`);
-            req = userDb.user;
+            req.user = userDb;
             next();
           } else {
             next(errors.invalidToken('Invalid token.'));
@@ -24,5 +24,13 @@ exports.validateToken = (req, res, next) => {
     }
   } else {
     next(errors.invalidToken('Token not found'));
+  }
+};
+
+exports.validateAdmin = (req, res, next) => {
+  if (!req.user.isAdmin) {
+    next(errors.userUnauthorized(`User ${req.user.email} do not have the required privileges`));
+  } else {
+    next();
   }
 };

@@ -77,3 +77,22 @@ exports.getListUsers = (req, res, next) => {
     .then(data => res.send(data))
     .catch(next);
 };
+
+exports.newAdmin = (req, res, next) => {
+  const errorMsg = validations.validateUser(newUser(req.body));
+  if (errorMsg.length > 0) {
+    throw errors.invalidUser(errorMsg);
+  } else {
+    newUser(req.body)
+      .then(createAdmin => {
+        createAdmin.isAdmin = true;
+        return User.doUpsert(createAdmin).then(isCreated => {
+          isCreated
+            ? logger.info(`New admin created: ${createAdmin.email}`)
+            : logger.info(`User: ${createAdmin.email} its now an admin`);
+          res.status(201).end();
+        });
+      })
+      .catch(next);
+  }
+};

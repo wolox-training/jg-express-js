@@ -26,29 +26,47 @@
   "count": 8,
   "rows": [
     {
+      "firstName": "admin",
+      "lastName": "root",
+      "email": "admin@wolox.com.ar",
+      "isAdmin": true
+    },
+    {
       "firstName": "firstName1",
       "lastName": "lastName1",
-      "email": "email1@gmail.com"
+      "email": "email1@gmail.com",
+      "isAdmin": false
     },
     {
       "firstName": "firstName2",
       "lastName": "lastName2",
-      "email": "email2@gmail.com"
+      "email": "email2@gmail.com",
+      "isAdmin": false
     },
     {
       "firstName": "firstName3",
       "lastName": "lastName3",
-      "email": "email3@gmail.com"
+      "email": "email3@gmail.com",
+      "isAdmin": false
     },
     {
       "firstName": "firstName4",
       "lastName": "lastName4",
-      "email": "email4@gmail.com"
-    },
-    {
-      "firstName": "firstName5",
-      "lastName": "lastName5",
-      "email": "email5@gmail.com"
+      "email": "email4@gmail.com",
+      "isAdmin": false
     }
   ]
-}</pre></div></div></div></div></div></body></html>
+}</pre></div></div></div></div><div class="panel panel-default"><div class="panel-heading" role="tab" id="heading-users-admins-POST"><h4 class="panel-title"><a role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="collapse-users-admins-POST" href="#collapse-users-admins-POST">POST /users/admins</a></h4></div><div id="collapse-users-admins-POST" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-users-admins-POST"><div class="panel-body"><h4>Request Data</h4><div class="container"><h5>Headers</h5><pre>{
+  "authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFkbWluQHdvbG94LmNvbS5hciJ9.QVBl4dX29PzN7j8ZxtbxR7rjMIUWN-NDD-4LgQRi2Jc",
+  "content-type": "application/json",
+  "content-length": 96
+}</pre><h5>Body</h5><pre>{
+  "firstName": "Gohan",
+  "lastName": "testing",
+  "password": "pass1234",
+  "email": "gohanss2@wolox.com.ar"
+}</pre></div></div><div class="panel-body"><h4>Response Data</h4><div class="container"><h5>Status: 201</h5><h5>Headers</h5><pre>{
+  "authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFkbWluQHdvbG94LmNvbS5hciJ9.QVBl4dX29PzN7j8ZxtbxR7rjMIUWN-NDD-4LgQRi2Jc",
+  "content-type": "application/json",
+  "content-length": 96
+}</pre><h5>Body</h5><pre>{}</pre></div></div></div></div></div></body></html>
