@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = {
-  up: (queryInterface, DataTypes) =>
-    queryInterface.addColumn('users', 'isAdmin', DataTypes.BOOLEAN, {
+  up: (queryInterface, Sequelize) =>
+    queryInterface.addColumn('users', 'isAdmin', Sequelize.BOOLEAN, {
       allowNull: false,
       after: 'password',
       defaultValue: false

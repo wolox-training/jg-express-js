@@ -33,5 +33,3 @@ module.exports = {
     }),
   down: (queryInterface, Sequelize) => queryInterface.dropTable('users')
 };
-
-// nueva migracion que agregue isADmin. Y que con el Down lo saque.

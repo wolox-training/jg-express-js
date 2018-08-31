@@ -93,9 +93,6 @@ exports.newAdmin = (req, res, next) => {
           res.status(201).end();
         });
       })
-      .catch(err => {
-        throw errors.databaseError(err.message);
-      })
       .catch(next);
   }
 };

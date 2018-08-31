@@ -397,44 +397,50 @@ describe('/users/sessions POST', () => {
           chai
             .request(server)
             .post('/users/admins')
-            .set(token.header, token.encode({ email: user.email }))
+            .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
             .send({
-              firstName: user.firstName,
-              lastName: user.lastName,
-              password: 'pass1234failtesting',
-              email: user.email
+              firstName: 'name name',
+              lastName: 'last last',
+              password: 'pass12345678',
+              email: 'email@email.com'
             })
             .catch(err => {
               expect(err.response).to.have.status(401);
               expect(err.response.body).to.have.property('message');
               expect(err.response.body).to.have.property('internal_code');
-              expect(err.response.body.message).to.equal('Invalid token.');
-              expect(err.response.body.internal_code).to.equal('Invalid_token');
+              expect(err.response.body.message).to.equal(
+                `User ${testUser.email} do not have the required privileges`
+              );
+              expect(err.response.body.internal_code).to.equal('User_unauthorized');
               done();
             });
         });
       });
 
       it('Should fail because arguments are not valid', done => {
-        creation(testUser).then(admin => {
-          chai
-            .request(server)
-            .post('/users/admins')
-            .set(token.header, token.encode({ email: admin.email }))
-            .send({
-              firstName: '',
-              lastName: '',
-              password: 'pas12314fail',
-              email: 'juanguti43@hotmail.com'
-            })
-            .catch(err => {
-              expect(err.response).to.have.status(401);
-              expect(err.response.body).to.have.property('message');
-              expect(err.response.body).to.have.property('internal_code');
-              expect(err.response.body.internal_code).to.equal('Invalid_token');
-              done();
-            });
-        });
+        chai
+          .request(server)
+          .post('/users/admins')
+          .set(token.header, token.encode({ email: 'admin@wolox.com.ar' }))
+          .send({
+            firstName: '',
+            lastName: '',
+            password: '123',
+            email: 'juanguti43@hotmail.com'
+          })
+          .catch(err => {
+            expect(err.response).to.have.status(400);
+            expect(err.response.body).to.have.property('message');
+            expect(err.response.body).to.have.property('internal_code');
+            expect(err.response.body.message).to.include(
+              'firstName cannot be null or empty',
+              'lastName cannot be null or empty',
+              'Email is not a valid email or not the @wolox.com.ar domain.',
+              'Invalid password. Must be 8 alphanumeric characters or longer.'
+            );
+            expect(err.response.body.internal_code).to.equal('Invalid_user');
+            done();
+          });
       });
 
       it('Should create a new admin', done => {
@@ -461,27 +467,28 @@ describe('/users/sessions POST', () => {
           });
       });
       it('Should update a new user like an admin', done => {
-        chai
-          .request(server)
-          .post('/users/admins')
-          .set(token.header, token.encode({ email: 'admin@wolox.com.ar' }))
-          .send({
-            firstName: 'testingAdmin',
-            lastName: 'testingAdmin',
-            password: 'pass1234',
-            email: 'testingadmin@wolox.com.ar'
-          })
-          .then(res => {
-            expect(res).to.have.status(201);
-            User.findOneUserWhere({ email: 'testingadmin@wolox.com.ar' }).then(UserDb => {
-              expect(UserDb.firstName).to.eql('testingAdmin');
-              expect(UserDb.lastName).to.eql('testingAdmin');
-              expect(UserDb.email).to.eql('testingadmin@wolox.com.ar');
-              expect(UserDb.isAdmin).to.eql(true);
-              dictum.chai(res);
-              done();
+        creation(testUser2).then(() => {
+          chai
+            .request(server)
+            .post('/users/admins')
+            .set(token.header, token.encode({ email: 'admin@wolox.com.ar' }))
+            .send({
+              firstName: 'Martin',
+              lastName: 'Sr.Picollo',
+              email: 'srpicollo12@wolox.com.ar',
+              password: 'gohan1234'
+            })
+            .then(res => {
+              expect(res).to.have.status(201);
+              User.findOneUserWhere({ email: 'srpicollo12@wolox.com.ar' }).then(UserDb => {
+                expect(UserDb.firstName).to.eql('Martin');
+                expect(UserDb.lastName).to.eql('Sr.Picollo');
+                expect(UserDb.email).to.eql('srpicollo12@wolox.com.ar');
+                expect(UserDb.isAdmin).to.eql(true);
+                done();
+              });
             });
-          });
+        });
       });
     });
   });
