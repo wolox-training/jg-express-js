@@ -1,5 +1,5 @@
 const users = require('./controllers/user'),
-  albums = require('./controllers/albums'),
+  albums = require('./services/albums'),
   validToken = require('./middlewares/validationTokens');
 
 exports.init = app => {

@@ -490,6 +490,23 @@ describe('/users/sessions POST', () => {
             });
         });
       });
+      describe('/albums GET', () => {
+        it('Should be succesfull', done => {
+          creation(testUser)
+            .then(() => generateToken(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' })))
+            .then(res => {
+              expect(token.header).to.equal('authorization');
+              expect(res).to.be.a('object');
+              expect(res.body).to.have.property('count');
+              expect(res.body).to.have.property('rows');
+              expect(res.body.rows).to.be.an('array');
+              expect(res.body.count).to.be.above(0);
+              expect(res).to.have.status(200);
+              dictum.chai(res, 'Albums list get succesfully');
+              done();
+            });
+        });
+      });
     });
   });
 });

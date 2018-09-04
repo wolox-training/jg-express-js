@@ -1,8 +1,8 @@
-const fetch = require('node-fetch');
+const mock = require('../services/albums').mock(),
+  errors = require('../errors');
 
-exports.getListAlbums = (req, res, next) => {
-  return fetch('https://jsonplaceholder.typicode.com/todos/')
-    .then(response => response.json())
-    .then(json => res.send(json))
-    .catch(next);
-};
+exports.list = (req, res, next) =>
+  mock
+    .getListAlbums()
+    .then(data => res.status(201).json(data))
+    .catch(err => next(errors.defaultError(`Error - ${err}`)));
