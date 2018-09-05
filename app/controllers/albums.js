@@ -1,8 +1,8 @@
-const mock = require('../services/albums').mock(),
-  errors = require('../errors');
+const albumService = require('../services/albums');
 
-exports.list = (req, res, next) =>
-  mock
+exports.albumList = (req, res, next) => {
+  albumService
     .getListAlbums()
-    .then(data => res.status(201).json(data))
-    .catch(err => next(errors.defaultError(`Error - ${err}`)));
+    .then(data => res.send(data))
+    .catch(next);
+};

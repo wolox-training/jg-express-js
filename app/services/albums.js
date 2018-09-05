@@ -1,8 +1,14 @@
-const fetch = require('node-fetch');
+const fetch = require('node-fetch'),
+  config = require('./../../config'),
+  errors = require('../errors');
 
-exports.getListAlbums = (req, res, next) => {
-  return fetch('https://jsonplaceholder.typicode.com/todos/')
-    .then(response => response.json())
-    .then(json => res.send(json))
-    .catch(next);
+exports.getListAlbums = () => {
+  return fetch(config.common.url)
+    .then(res => {
+      return res.json();
+    })
+
+    .catch(err => {
+      throw errors.defaultError(err.message);
+    });
 };

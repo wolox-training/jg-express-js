@@ -1,5 +1,5 @@
 const users = require('./controllers/user'),
-  albums = require('./services/albums'),
+  albums = require('./controllers/albums'),
   validToken = require('./middlewares/validationTokens');
 
 exports.init = app => {
@@ -7,5 +7,5 @@ exports.init = app => {
   app.post('/users/sessions', users.signIn);
   app.get('/users', [validToken.validateToken], users.getListUsers);
   app.post('/users/admins', [validToken.validateToken, validToken.validateAdmin], users.newAdmin);
-  app.get('/albums', [validToken.validateToken], albums.getListAlbums);
+  app.get('/albums', [validToken.validateToken], albums.albumList);
 };

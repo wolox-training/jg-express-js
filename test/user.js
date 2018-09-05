@@ -2,6 +2,8 @@ const chai = require('chai'),
   User = require('../app/models').user,
   chaiHttp = require('chai-http'),
   dictum = require('dictum.js'),
+  nock = require('nock'),
+  config = require('./../config'),
   expect = chai.expect,
   token = require('../app/services/tokenGenerator'),
   dataCreation = require('../scripts/dataCreation'),
@@ -491,20 +493,74 @@ describe('/users/sessions POST', () => {
         });
       });
       describe('/albums GET', () => {
-        it('Should be succesfull', done => {
-          creation(testUser)
-            .then(() => generateToken(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' })))
-            .then(res => {
-              expect(token.header).to.equal('authorization');
-              expect(res).to.be.a('object');
-              expect(res.body).to.have.property('count');
-              expect(res.body).to.have.property('rows');
-              expect(res.body.rows).to.be.an('array');
-              expect(res.body.count).to.be.above(0);
-              expect(res).to.have.status(200);
-              dictum.chai(res, 'Albums list get succesfully');
+        const albumError = () => {
+          nock('testingfail')
+            .get('/albums')
+            .reply(404, 'Url not found');
+        };
+
+        const albumSuccess = () => {
+          nock(config.common.url)
+            .get('/albums')
+            .reply(200, 'Success connection!');
+        };
+        it('Should not get the list without a token', done => {
+          chai
+            .request(server)
+            .get('/albums')
+            .catch(err => {
+              expect(err.response).to.have.status(401);
+              expect(err.response.body).to.have.property('message');
+              expect(err.response.body).to.have.property('internal_code');
+              expect(err.response.body.message).to.equal('Token not found');
+              expect(err.response.body.internal_code).to.equal('Invalid_token');
               done();
             });
+        });
+
+        it('Should fail with a fail external service', done => {
+          creation(testUser).then(() => {
+            before(() => {
+              nock.cleanAll();
+              albumError();
+            });
+            chai
+              .request(server)
+              .get('/albums')
+              .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
+              .catch(err => {
+                expect(err.response).to.have.status(500);
+                expect(err.response.body).to.have.property('message');
+                expect(err.response.body).to.have.property('internal_code');
+                expect(err.response.body.internal_code).to.equal('default_error');
+                done();
+              });
+          });
+        });
+
+        after(() => {
+          nock.cleanAll();
+        });
+
+        before(() => {
+          albumSuccess();
+          it('Should be succesfull', done => {
+            creation(testUser).then(() => {
+              chai
+                .request(server)
+                .get('/albums')
+                .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
+                .then(res => {
+                  expect(token.header).to.equal('authorization');
+                  expect(res).to.be.a('object');
+                  expect(res.body).to.be.an('array');
+                  expect(res.body).to.have.lengthOf.above(0);
+                  expect(res).to.have.status(200);
+                  dictum.chai(res, 'Albums list get succesfully');
+                  done();
+                });
+            });
+          });
         });
       });
     });
