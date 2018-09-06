@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     });
 
-  userAlbum.getOneAlbum = userId =>
+  userAlbum.getAllUserAlbums = userId =>
     userAlbum.findAll({ attributes: ['albumId'], where: { userId } }).catch(err => {
       throw errors.databaseError(err.message);
     });

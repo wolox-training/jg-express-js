@@ -504,6 +504,7 @@ describe('/users/sessions POST', () => {
             .get('/albums')
             .reply(200, 'Success connection!');
         };
+
         it('Should not get the list without a token', done => {
           chai
             .request(server)
@@ -545,6 +546,7 @@ describe('/users/sessions POST', () => {
         before(() => {
           albumSuccess();
         });
+
         it('Should be succesfull', done => {
           creation(testUser).then(() => {
             chai
@@ -560,6 +562,72 @@ describe('/users/sessions POST', () => {
                 dictum.chai(res, 'Albums list get succesfully');
                 done();
               });
+          });
+        });
+
+        describe('/users/:user_id/albums GET', () => {
+          const oneAlbum = persist => {
+            nock(`${config.common.url}`)
+              .persist(persist)
+              .get('/albums/1')
+              .reply(200, {
+                userId: 1,
+                id: 1,
+                title: 'quidem molestiae enim'
+              });
+          };
+
+          const noAlbum = (persist, num) => {
+            nock(`${config.common.url}`)
+              .persist(persist)
+              .get(`/albums/${num}`)
+              .reply(404, {});
+          };
+          afterEach(() => {
+            nock.cleanAll();
+          });
+          it('should fail because user is not an administrator', done => {
+            creation(testUser).then(newUser => {
+              chai
+                .request(server)
+                .get(`/users/${newUser.id}/albums`)
+                .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
+                .catch(err => {
+                  expect(err.response).to.have.status(400);
+                  expect(err.response.body).to.have.property('message');
+                  expect(err.response.body).to.have.property('internal_code');
+                  expect(err.response.body.message).to.equal('User cannot see others users albums.');
+                  expect(err.response.body.internal_code).to.equal('Invalid_user');
+                  done();
+                });
+            });
+          });
+
+          before(() => {
+            oneAlbum(false);
+          });
+
+          it.only('should fail because external service broke', done => {
+            creation(testUser).then(() => {
+              chai
+                .request(server)
+                .post('/albums/1')
+                .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
+                .then(() => {
+                  noAlbum(false, 1);
+                  chai
+                    .request(server)
+                    .get('/users/1/albums')
+                    .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
+                    .catch(err => {
+                      expect(err.response).to.have.status(404);
+                      expect(err.response.body).to.have.property('message');
+                      expect(err.response.body).to.have.property('internal_code');
+                      expect(err.response.body.internal_code).to.equal('fetch_error');
+                      done();
+                    });
+                });
+            });
           });
         });
       });

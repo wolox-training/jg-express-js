@@ -1,4 +1,5 @@
 const albumService = require('../services/albums'),
+  User = require('../models').user,
   userAlbum = require('../models').useralbum,
   logger = require('../logger'),
   errors = require('../errors');
@@ -29,4 +30,26 @@ exports.purchaseAlbum = (req, res, next) => {
       }
     })
     .catch(next);
+};
+
+exports.userAlbums = (req, res, next) => {
+  const userId = parseInt(req.params.user_id);
+  if (req.user.isAdmin || req.user.id === userId) {
+    return User.findOneUserWhere({ id: userId })
+      .then(user => {
+        if (user) {
+          return albumService
+            .getUserAlbums(user.id)
+            .then(albums => {
+              res.send(albums);
+            })
+            .catch(next);
+        } else {
+          next(errors.invalidUser(`User -> ${req.user.email}, ID: ${userId} does not exist`));
+        }
+      })
+      .catch(next);
+  } else {
+    next(errors.invalidUser('User cannot see others users albums.'));
+  }
 };
