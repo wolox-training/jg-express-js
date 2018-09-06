@@ -8,4 +8,5 @@ exports.init = app => {
   app.get('/users', [validToken.validateToken], users.getListUsers);
   app.post('/users/admins', [validToken.validateToken, validToken.validateAdmin], users.newAdmin);
   app.get('/albums', [validToken.validateToken], albums.albumList);
+  app.post('/albums/:id', [validToken.validateToken], albums.purchaseAlbum);
 };

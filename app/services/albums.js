@@ -12,3 +12,14 @@ exports.getListAlbums = () => {
       throw errors.defaultError(err.message);
     });
 };
+
+exports.getOneAlbum = id => {
+  return fetch(`${config.common.url}${id}`)
+    .then(res => {
+      return res.json();
+    })
+
+    .catch(err => {
+      throw errors.defaultError(err.message);
+    });
+};

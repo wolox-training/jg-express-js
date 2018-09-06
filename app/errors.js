@@ -20,3 +20,6 @@ exports.invalidToken = message => internalError(message, exports.INVALID_TOKEN);
 
 exports.USER_UNAUTHORIZED = 'User_unauthorized';
 exports.userUnauthorized = message => internalError(message, exports.USER_UNAUTHORIZED);
+
+exports.NOT_FOUND = 'Not_Found';
+exports.notFound = message => internalError(message, exports.NOT_FOUND);
