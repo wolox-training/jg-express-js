@@ -3,7 +3,7 @@ const fetch = require('node-fetch'),
   errors = require('../errors');
 
 exports.getListAlbums = () => {
-  return fetch(config.common.url)
+  return fetch(`${config.common.url}`)
     .then(res => {
       return res.json();
     })

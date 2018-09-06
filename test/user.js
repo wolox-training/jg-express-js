@@ -500,7 +500,7 @@ describe('/users/sessions POST', () => {
         };
 
         const albumSuccess = () => {
-          nock(config.common.url)
+          nock(`${config.common.url}`)
             .get('/albums')
             .reply(200, 'Success connection!');
         };
@@ -518,12 +518,13 @@ describe('/users/sessions POST', () => {
             });
         });
 
+        before(() => {
+          nock.cleanAll();
+          albumError();
+        });
+
         it('Should fail with a fail external service', done => {
           creation(testUser).then(() => {
-            before(() => {
-              nock.cleanAll();
-              albumError();
-            });
             chai
               .request(server)
               .get('/albums')
@@ -541,25 +542,24 @@ describe('/users/sessions POST', () => {
         after(() => {
           nock.cleanAll();
         });
-
         before(() => {
           albumSuccess();
-          it('Should be succesfull', done => {
-            creation(testUser).then(() => {
-              chai
-                .request(server)
-                .get('/albums')
-                .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
-                .then(res => {
-                  expect(token.header).to.equal('authorization');
-                  expect(res).to.be.a('object');
-                  expect(res.body).to.be.an('array');
-                  expect(res.body).to.have.lengthOf.above(0);
-                  expect(res).to.have.status(200);
-                  dictum.chai(res, 'Albums list get succesfully');
-                  done();
-                });
-            });
+        });
+        it('Should be succesfull', done => {
+          creation(testUser).then(() => {
+            chai
+              .request(server)
+              .get('/albums')
+              .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
+              .then(res => {
+                expect(token.header).to.equal('authorization');
+                expect(res).to.be.a('object');
+                expect(res.body).to.be.an('array');
+                expect(res.body).to.have.lengthOf.above(0);
+                expect(res).to.have.status(200);
+                dictum.chai(res, 'Albums list get succesfully');
+                done();
+              });
           });
         });
       });
