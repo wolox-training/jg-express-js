@@ -9,5 +9,4 @@ exports.init = app => {
   app.post('/users/admins', [validToken.validateToken, validToken.validateAdmin], users.newAdmin);
   app.get('/albums', [validToken.validateToken], albums.albumList);
   app.post('/albums/:id', [validToken.validateToken], albums.purchaseAlbum);
-  app.get('/users/:user_id/albums', [validToken.validateToken], albums.userAlbums);
 };
