@@ -494,16 +494,21 @@ describe('/users/sessions POST', () => {
       });
       describe('/albums GET', () => {
         const albumError = () => {
-          nock('testingfail')
+          nock(`${config.common.url}`)
             .get('/albums')
-            .reply(404, 'Url not found');
+            .reply(404, {});
         };
 
         const albumSuccess = () => {
           nock(`${config.common.url}`)
             .get('/albums')
-            .reply(200, 'Success connection!');
+            .reply(200, [{ message: 'Success connection!' }]);
         };
+
+        beforeEach(() => {
+          nock.cleanAll();
+        });
+
         it('Should not get the list without a token', done => {
           chai
             .request(server)
@@ -518,34 +523,25 @@ describe('/users/sessions POST', () => {
             });
         });
 
-        before(() => {
-          nock.cleanAll();
+        it('Should fail with a external service error', done => {
           albumError();
-        });
-
-        it('Should fail with a fail external service', done => {
           creation(testUser).then(() => {
             chai
               .request(server)
               .get('/albums')
               .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
               .catch(err => {
-                expect(err.response).to.have.status(500);
+                expect(err.response).to.have.status(404);
                 expect(err.response.body).to.have.property('message');
                 expect(err.response.body).to.have.property('internal_code');
-                expect(err.response.body.internal_code).to.equal('default_error');
+                expect(err.response.body.internal_code).to.equal('Not_found');
                 done();
               });
           });
         });
 
-        after(() => {
-          nock.cleanAll();
-        });
-        before(() => {
-          albumSuccess();
-        });
         it('Should be succesfull', done => {
+          albumSuccess();
           creation(testUser).then(() => {
             chai
               .request(server)
