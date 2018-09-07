@@ -1,24 +1,24 @@
-const fetch = require('node-fetch'),
+const rp = require('request-promise'),
   config = require('./../../config'),
-  errors = require('../errors');
+  errors = require('../errors'),
+  options = {
+    uri: `${config.common.url}/albums`,
+    json: true
+  };
 
 exports.getListAlbums = () => {
-  return fetch(`${config.common.url}`)
+  return rp(options)
     .then(res => {
-      return res.json();
+      return res;
     })
-
     .catch(err => {
-      throw errors.defaultError(err.message);
+      throw errors.notFound(err.message);
     });
 };
 
 exports.getOneAlbum = id => {
-  return fetch(`${config.common.url}${id}`)
-    .then(res => {
-      return res.json();
-    })
-
+  return rp(options)
+    .then(res => res)
     .catch(err => {
       throw errors.defaultError(err.message);
     });
