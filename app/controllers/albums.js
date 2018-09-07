@@ -3,12 +3,11 @@ const albumService = require('../services/albums'),
   logger = require('../logger'),
   errors = require('../errors');
 
-exports.albumList = (req, res, next) => {
+exports.albumList = (req, res, next) =>
   albumService
     .getListAlbums()
     .then(data => res.send(data))
     .catch(next);
-};
 
 exports.purchaseAlbum = (req, res, next) => {
   const albumId = parseInt(req.params.id);

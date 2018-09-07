@@ -23,3 +23,6 @@ exports.userUnauthorized = message => internalError(message, exports.USER_UNAUTH
 
 exports.NOT_FOUND = 'Not_found';
 exports.notFound = message => internalError(message, exports.NOT_FOUND);
+
+exports.FETCH_ERROR = 'Fetch_error';
+exports.fetchError = message => internalError(message, exports.FETCH_ERROR);

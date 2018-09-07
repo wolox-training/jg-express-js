@@ -7,6 +7,7 @@ const chai = require('chai'),
   expect = chai.expect,
   token = require('../app/services/tokenGenerator'),
   dataCreation = require('../scripts/dataCreation'),
+  userAlbum = require('../app/models').useralbum,
   server = require('../app');
 
 chai.use(chaiHttp);
@@ -502,7 +503,18 @@ describe('/users/sessions POST', () => {
         const albumSuccess = () => {
           nock(`${config.common.url}`)
             .get('/albums')
-            .reply(200, [{ message: 'Success connection!' }]);
+            .reply(200, [
+              {
+                userId: 1,
+                id: 1,
+                title: 'quidem molestiae enim'
+              },
+              {
+                userId: 1,
+                id: 2,
+                title: 'sunt qui excepturi placeat culpa'
+              }
+            ]);
         };
 
         beforeEach(() => {
@@ -531,10 +543,10 @@ describe('/users/sessions POST', () => {
               .get('/albums')
               .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
               .catch(err => {
-                expect(err.response).to.have.status(404);
+                expect(err.response).to.have.status(500);
                 expect(err.response.body).to.have.property('message');
                 expect(err.response.body).to.have.property('internal_code');
-                expect(err.response.body.internal_code).to.equal('Not_found');
+                expect(err.response.body.internal_code).to.equal('Fetch_error');
                 done();
               });
           });
@@ -552,6 +564,9 @@ describe('/users/sessions POST', () => {
                 expect(res).to.be.a('object');
                 expect(res.body).to.be.an('array');
                 expect(res.body).to.have.lengthOf.above(0);
+                expect(res.body[0]).to.have.property('userId');
+                expect(res.body[0]).to.have.property('id');
+                expect(res.body[0]).to.have.property('title');
                 expect(res).to.have.status(200);
                 dictum.chai(res, 'Albums list get succesfully');
                 done();
@@ -559,10 +574,9 @@ describe('/users/sessions POST', () => {
           });
         });
 
-        describe('/users/:user_id/albums GET', () => {
-          const oneAlbum = persist => {
+        describe('/albums/:id POST', () => {
+          const onlyFirstAlbum = () => {
             nock(`${config.common.url}`)
-              .persist(persist)
               .get('/albums/1')
               .reply(200, {
                 userId: 1,
@@ -571,55 +585,69 @@ describe('/users/sessions POST', () => {
               });
           };
 
-          const noAlbum = (persist, num) => {
+          const oneAlbumError = num => {
             nock(`${config.common.url}`)
-              .persist(persist)
               .get(`/albums/${num}`)
               .reply(404, {});
           };
-          afterEach(() => {
+
+          beforeEach(() => {
             nock.cleanAll();
           });
-          it('should fail because user is not an administrator', done => {
-            creation(testUser).then(newUser => {
-              chai
-                .request(server)
-                .get(`/users/${newUser.id}/albums`)
-                .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
-                .catch(err => {
-                  expect(err.response).to.have.status(400);
-                  expect(err.response.body).to.have.property('message');
-                  expect(err.response.body).to.have.property('internal_code');
-                  expect(err.response.body.message).to.equal('User cannot see others users albums.');
-                  expect(err.response.body.internal_code).to.equal('Invalid_user');
-                  done();
-                });
-            });
-          });
 
-          before(() => {
-            oneAlbum(false);
-          });
-
-          it.only('should fail because external service broke', done => {
+          it('Should not purchase the same album twice', done => {
             creation(testUser).then(() => {
               chai
                 .request(server)
                 .post('/albums/1')
                 .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
                 .then(() => {
-                  noAlbum(false, 1);
                   chai
                     .request(server)
-                    .get('/users/1/albums')
+                    .post('/albums/1')
                     .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
                     .catch(err => {
-                      expect(err.response).to.have.status(404);
+                      expect(err.response).to.have.status(400);
                       expect(err.response.body).to.have.property('message');
                       expect(err.response.body).to.have.property('internal_code');
-                      expect(err.response.body.internal_code).to.equal('fetch_error');
+                      expect(err.response.body.internal_code).to.equal('Invalid_user');
+                      expect(err.response.body.message).to.equal('User cannot purchase the same album twice');
                       done();
                     });
+                });
+            });
+          });
+
+          it('Should fail because external service broke', done => {
+            oneAlbumError(1);
+            creation(testUser).then(() => {
+              chai
+                .request(server)
+                .post('/albums/1')
+                .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
+                .catch(err => {
+                  expect(err.response).to.have.status(500);
+                  expect(err.response.body).to.have.property('message');
+                  expect(err.response.body).to.have.property('internal_code');
+                  expect(err.response.body.internal_code).to.equal('Fetch_error');
+                  done();
+                });
+            });
+          });
+
+          it('Should be successful', done => {
+            onlyFirstAlbum();
+            creation(testUser).then(() => {
+              chai
+                .request(server)
+                .post('/albums/1')
+                .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
+                .then(res => {
+                  expect(token.header).to.equal('authorization');
+                  expect(res).to.have.status(201);
+                  userAlbum.getAllUserAlbums(1).then(albums => expect(userAlbum.id).eql(albums.id));
+                  dictum.chai(res, 'Album succesfull purchase');
+                  done();
                 });
             });
           });
