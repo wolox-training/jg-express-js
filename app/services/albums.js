@@ -8,10 +8,8 @@ exports.getListAlbums = () => {
     json: true
   };
   return rp(options)
-    .then(res => {
-      return res;
-    })
+    .then(res => res)
     .catch(err => {
-      throw errors.notFound(err.message);
+      throw errors.defaultError(err.message);
     });
 };
