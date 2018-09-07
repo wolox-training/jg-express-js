@@ -20,3 +20,6 @@ exports.invalidToken = message => internalError(message, exports.INVALID_TOKEN);
 
 exports.USER_UNAUTHORIZED = 'User_unauthorized';
 exports.userUnauthorized = message => internalError(message, exports.USER_UNAUTHORIZED);
+
+exports.FETCH_ERROR = 'Fetch_error';
+exports.fetchError = message => internalError(message, exports.FETCH_ERROR);

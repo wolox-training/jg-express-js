@@ -494,16 +494,32 @@ describe('/users/sessions POST', () => {
       });
       describe('/albums GET', () => {
         const albumError = () => {
-          nock('testingfail')
+          nock(`${config.common.url}`)
             .get('/albums')
-            .reply(404, 'Url not found');
+            .reply(404, {});
         };
 
         const albumSuccess = () => {
-          nock(config.common.url)
+          nock(`${config.common.url}`)
             .get('/albums')
-            .reply(200, 'Success connection!');
+            .reply(200, [
+              {
+                userId: 1,
+                id: 1,
+                title: 'quidem molestiae enim'
+              },
+              {
+                userId: 1,
+                id: 2,
+                title: 'sunt qui excepturi placeat culpa'
+              }
+            ]);
         };
+
+        beforeEach(() => {
+          nock.cleanAll();
+        });
+
         it('Should not get the list without a token', done => {
           chai
             .request(server)
@@ -518,12 +534,9 @@ describe('/users/sessions POST', () => {
             });
         });
 
-        it('Should fail with a fail external service', done => {
+        it('Should fail with a external service error', done => {
+          albumError();
           creation(testUser).then(() => {
-            before(() => {
-              nock.cleanAll();
-              albumError();
-            });
             chai
               .request(server)
               .get('/albums')
@@ -532,34 +545,31 @@ describe('/users/sessions POST', () => {
                 expect(err.response).to.have.status(500);
                 expect(err.response.body).to.have.property('message');
                 expect(err.response.body).to.have.property('internal_code');
-                expect(err.response.body.internal_code).to.equal('default_error');
+                expect(err.response.body.internal_code).to.equal('Fetch_error');
                 done();
               });
           });
         });
 
-        after(() => {
-          nock.cleanAll();
-        });
-
-        before(() => {
+        it('Should be succesfull', done => {
           albumSuccess();
-          it('Should be succesfull', done => {
-            creation(testUser).then(() => {
-              chai
-                .request(server)
-                .get('/albums')
-                .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
-                .then(res => {
-                  expect(token.header).to.equal('authorization');
-                  expect(res).to.be.a('object');
-                  expect(res.body).to.be.an('array');
-                  expect(res.body).to.have.lengthOf.above(0);
-                  expect(res).to.have.status(200);
-                  dictum.chai(res, 'Albums list get succesfully');
-                  done();
-                });
-            });
+          creation(testUser).then(() => {
+            chai
+              .request(server)
+              .get('/albums')
+              .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
+              .then(res => {
+                expect(token.header).to.equal('authorization');
+                expect(res).to.be.a('object');
+                expect(res.body).to.be.an('array');
+                expect(res.body).to.have.lengthOf.above(0);
+                expect(res.body[0]).to.have.property('userId');
+                expect(res.body[0]).to.have.property('id');
+                expect(res.body[0]).to.have.property('title');
+                expect(res).to.have.status(200);
+                dictum.chai(res, 'Albums list get succesfully');
+                done();
+              });
           });
         });
       });
