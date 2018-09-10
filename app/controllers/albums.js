@@ -1,5 +1,5 @@
 const albumService = require('../services/albums'),
-  userAlbum = require('../models').useralbum,
+  userAlbum = require('../models').user_album,
   logger = require('../logger'),
   errors = require('../errors');
 
@@ -11,12 +11,11 @@ exports.albumList = (req, res, next) =>
 
 exports.purchaseAlbum = (req, res, next) => {
   const albumId = parseInt(req.params.id);
-  if (!albumId) next(errors.notFound('Album not Found'));
-  albumService
+  return albumService
     .getOneAlbum(albumId)
     .then(album => {
       if (album) {
-        userAlbum
+        return userAlbum
           .createPurchase(req.user.id, albumId)
           .then(() => {
             logger.info(`User -> ${req.user.email}, ID: ${req.user.id} bought album #${albumId}`);

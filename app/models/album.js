@@ -3,7 +3,7 @@
 const errors = require('../errors');
 
 module.exports = (sequelize, DataTypes) => {
-  const userAlbum = sequelize.define('useralbum', {
+  const userAlbum = sequelize.define('user_album', {
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false
@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
   userAlbum.createPurchase = (userId, albumId) =>
     userAlbum.create({ userId, albumId }).catch(err => {
       if (err instanceof sequelize.UniqueConstraintError) {
-        throw errors.invalidUser('User cannot purchase the same album twice');
+        throw errors.dataConflict('User cannot purchase the same album twice');
       } else {
         throw errors.defaultError(err.message);
       }

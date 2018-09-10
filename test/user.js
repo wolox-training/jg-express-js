@@ -7,7 +7,7 @@ const chai = require('chai'),
   expect = chai.expect,
   token = require('../app/services/tokenGenerator'),
   dataCreation = require('../scripts/dataCreation'),
-  userAlbum = require('../app/models').useralbum,
+  userAlbum = require('../app/models').user_album,
   server = require('../app');
 
 chai.use(chaiHttp);
@@ -607,10 +607,10 @@ describe('/users/sessions POST', () => {
                     .post('/albums/1')
                     .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
                     .catch(err => {
-                      expect(err.response).to.have.status(400);
+                      expect(err.response).to.have.status(409);
                       expect(err.response.body).to.have.property('message');
                       expect(err.response.body).to.have.property('internal_code');
-                      expect(err.response.body.internal_code).to.equal('Invalid_user');
+                      expect(err.response.body.internal_code).to.equal('Data_conflict');
                       expect(err.response.body.message).to.equal('User cannot purchase the same album twice');
                       done();
                     });
@@ -645,9 +645,11 @@ describe('/users/sessions POST', () => {
                 .then(res => {
                   expect(token.header).to.equal('authorization');
                   expect(res).to.have.status(201);
-                  userAlbum.getAllUserAlbums(1).then(albums => expect(userAlbum.id).eql(albums.id));
-                  dictum.chai(res, 'Album succesfull purchase');
-                  done();
+                  userAlbum.getAllUserAlbums(1).then(albums => {
+                    expect(userAlbum.id).eql(albums.id);
+                    dictum.chai(res, 'Album succesfull purchase');
+                    done();
+                  });
                 });
             });
           });

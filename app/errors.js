@@ -26,3 +26,6 @@ exports.notFound = message => internalError(message, exports.NOT_FOUND);
 
 exports.FETCH_ERROR = 'Fetch_error';
 exports.fetchError = message => internalError(message, exports.FETCH_ERROR);
+
+exports.DATA_CONFLICT = 'Data_conflict';
+exports.dataConflict = message => internalError(message, exports.DATA_CONFLICT);
