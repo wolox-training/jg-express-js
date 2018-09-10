@@ -1,28 +1,26 @@
-const fetch = require('node-fetch'),
-  userAlbum = require('../models').useralbum,
+const userAlbum = require('../models').useralbum,
+  rp = require('request-promise'),
   config = require('./../../config'),
   errors = require('../errors');
 
 exports.getListAlbums = () => {
-  return fetch(`${config.common.url}`)
-    .then(res => {
-      return res.json();
-    })
-
-    .catch(err => {
-      throw errors.defaultError(err.message);
-    });
+  const options = {
+    uri: `${config.common.url}/albums`,
+    json: true
+  };
+  return rp(options).catch(err => {
+    throw errors.fetchError(err.message);
+  });
 };
 
 exports.getOneAlbum = id => {
-  return fetch(`${config.common.url}${id}`)
-    .then(res => {
-      return res.json();
-    })
-
-    .catch(err => {
-      throw errors.defaultError(err.message);
-    });
+  const options = {
+    uri: `${config.common.url}/albums${id}`,
+    json: true
+  };
+  return rp(options).catch(err => {
+    throw errors.fetchError(err.message);
+  });
 };
 
 exports.getUserAlbums = id =>
