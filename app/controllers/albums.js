@@ -5,14 +5,14 @@ const albumService = require('../services/albums'),
 
 exports.albumList = (req, res, next) =>
   albumService
-    .getListAlbums()
+    .getAlbums()
     .then(data => res.send(data))
     .catch(next);
 
 exports.purchaseAlbum = (req, res, next) => {
   const albumId = parseInt(req.params.id);
   return albumService
-    .getOneAlbum(albumId)
+    .getAlbums(albumId)
     .then(album => {
       if (album) {
         return userAlbum
