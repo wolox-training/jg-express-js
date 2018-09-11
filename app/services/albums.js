@@ -1,23 +1,15 @@
-const userAlbum = require('../models').useralbum,
+const userAlbum = require('../models').user_album,
   rp = require('request-promise'),
   config = require('./../../config'),
   errors = require('../errors');
 
-exports.getListAlbums = () => {
-  const options = {
-    uri: `${config.common.url}/albums`,
-    json: true
-  };
-  return rp(options).catch(err => {
-    throw errors.fetchError(err.message);
-  });
-};
-
-exports.getOneAlbum = id => {
-  const options = {
-    uri: `${config.common.url}/albums${id}`,
-    json: true
-  };
+exports.getAlbums = id => {
+  const options = { json: true };
+  if (id) {
+    options.uri = `${config.common.url}/albums/${id}`;
+  } else {
+    options.uri = `${config.common.url}/albums`;
+  }
   return rp(options).catch(err => {
     throw errors.fetchError(err.message);
   });
@@ -26,6 +18,6 @@ exports.getOneAlbum = id => {
 exports.getUserAlbums = id =>
   userAlbum.getAllUserAlbums(id).then(albums => {
     const albumArray = [];
-    albums.forEach(element => albumArray.push(exports.getOneAlbum(`/${element.albumId}`)));
+    albums.forEach(element => albumArray.push(exports.getAlbums(`/${element.albumId}`)));
     return Promise.all(albumArray);
   });

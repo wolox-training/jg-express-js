@@ -3,7 +3,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) =>
     queryInterface
-      .createTable('useralbums', {
+      .createTable('user_albums', {
         id: {
           allowNull: false,
           autoIncrement: true,
@@ -28,13 +28,13 @@ module.exports = {
         }
       })
       .then(() =>
-        queryInterface.addIndex('useralbums', ['userId', 'albumId'], {
+        queryInterface.addIndex('user_albums', ['userId', 'albumId'], {
           indicesType: 'UNIQUE'
         })
       ),
 
   down: (queryInterface, Sequelize) =>
     queryInterface
-      .removeIndex('useralbums', ['userId', 'albumId'])
-      .then(() => queryInterface.dropTable('userAlbum'))
+      .removeIndex('user_albums', ['userId', 'albumId'])
+      .then(() => queryInterface.dropTable('user_albums'))
 };
