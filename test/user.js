@@ -7,6 +7,7 @@ const chai = require('chai'),
   expect = chai.expect,
   token = require('../app/services/tokenGenerator'),
   dataCreation = require('../scripts/dataCreation'),
+  userAlbum = require('../app/models').user_album,
   server = require('../app');
 
 chai.use(chaiHttp);
@@ -570,6 +571,87 @@ describe('/users/sessions POST', () => {
                 dictum.chai(res, 'Albums list get succesfully');
                 done();
               });
+          });
+        });
+
+        describe('/albums/:id POST', () => {
+          const onlyFirstAlbum = () => {
+            nock(`${config.common.url}`)
+              .get('/albums/1')
+              .reply(200, {
+                userId: 1,
+                id: 1,
+                title: 'quidem molestiae enim'
+              });
+          };
+
+          const oneAlbumError = num => {
+            nock(`${config.common.url}`)
+              .get(`/albums/${num}`)
+              .reply(404, {});
+          };
+
+          beforeEach(() => {
+            nock.cleanAll();
+          });
+
+          it('Should not purchase the same album twice', done => {
+            creation(testUser).then(() => {
+              chai
+                .request(server)
+                .post('/albums/1')
+                .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
+                .then(() => {
+                  chai
+                    .request(server)
+                    .post('/albums/1')
+                    .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
+                    .catch(err => {
+                      expect(err.response).to.have.status(409);
+                      expect(err.response.body).to.have.property('message');
+                      expect(err.response.body).to.have.property('internal_code');
+                      expect(err.response.body.internal_code).to.equal('Data_conflict');
+                      expect(err.response.body.message).to.equal('User cannot purchase the same album twice');
+                      done();
+                    });
+                });
+            });
+          });
+
+          it('Should fail because external service broke', done => {
+            oneAlbumError(1);
+            creation(testUser).then(() => {
+              chai
+                .request(server)
+                .post('/albums/1')
+                .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
+                .catch(err => {
+                  expect(err.response).to.have.status(500);
+                  expect(err.response.body).to.have.property('message');
+                  expect(err.response.body).to.have.property('internal_code');
+                  expect(err.response.body.internal_code).to.equal('Fetch_error');
+                  done();
+                });
+            });
+          });
+
+          it('Should be successful', done => {
+            onlyFirstAlbum();
+            creation(testUser).then(() => {
+              chai
+                .request(server)
+                .post('/albums/1')
+                .set(token.header, token.encode({ email: 'juanguti43@wolox.com.ar' }))
+                .then(res => {
+                  expect(token.header).to.equal('authorization');
+                  expect(res).to.have.status(201);
+                  userAlbum.getAllUserAlbums(1).then(albums => {
+                    expect(userAlbum.id).eql(albums.id);
+                    dictum.chai(res, 'Album succesfull purchase');
+                    done();
+                  });
+                });
+            });
           });
         });
       });

@@ -10,6 +10,8 @@ const statusCodes = {
   [errors.DEFAULT_ERROR]: 500,
   [errors.DATABASE_ERROR]: 500,
   [errors.FETCH_ERROR]: 500,
+  [errors.DATA_CONFLICT]: 409,
+  [errors.NOT_FOUND]: 404,
   [errors.REQUEST_ERROR]: 400
 };
 
