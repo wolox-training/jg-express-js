@@ -11,7 +11,9 @@ module.exports = (sequelize, DataTypes) => {
     albumId: {
       type: DataTypes.INTEGER,
       allowNull: false
-    }
+    },
+    underscored: true,
+    freezeTableName: true
   });
 
   userAlbum.createPurchase = (userId, albumId) =>

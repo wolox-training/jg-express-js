@@ -3,17 +3,11 @@ const rp = require('request-promise'),
   errors = require('../errors');
 
 exports.getAlbums = id => {
-  let options = {};
+  const options = { json: true };
   if (id) {
-    options = {
-      uri: `${config.common.url}/albums/${id}`,
-      json: true
-    };
+    options.uri = `${config.common.url}/albums/${id}`;
   } else {
-    options = {
-      uri: `${config.common.url}/albums`,
-      json: true
-    };
+    options.uri = `${config.common.url}/albums`;
   }
   return rp(options).catch(err => {
     throw errors.fetchError(err.message);
