@@ -9,6 +9,7 @@ const statusCodes = {
   [errors.INVALID_TOKEN]: 401,
   [errors.DEFAULT_ERROR]: 500,
   [errors.DATABASE_ERROR]: 500,
+  [errors.NOT_FOUND]: 404,
   [errors.FETCH_ERROR]: 500,
   [errors.DATA_CONFLICT]: 409,
   [errors.NOT_FOUND]: 404,
